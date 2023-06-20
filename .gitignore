@@ -22,4 +22,7 @@
 go.work
 
 # binary
-loadbalancer-provider-haproxy
+./loadbalancer-provider-haproxy
+
+# test output
+coverage.txt

@@ -1,0 +1,98 @@
+---
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "common.names.fullname" . }}
+  labels: 
+    {{- include "common.labels.standard" . | nindent 4 }}
+    {{- if .Values.provider.extraLabels }}
+    {{- toYaml .Values.provider.extraLabels | nindent 4 }}
+    {{- end }}
+    {{- if .Values.provider.extraAnnotations }}
+  annotations:
+    {{- toYaml .Values.provider.extraAnnotations | nindent 4 }}
+    {{- end }}
+spec:
+  replicas: {{ .Values.provider.replicas | default 1 }}
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels: 
+      {{- include "common.labels.standard" . | nindent 8 }}
+      {{- if .Values.provider.extraLabels }}
+      {{- toYaml .Values.provider.extraLabels | nindent 8 }}
+      {{- end }}
+      {{- if .Values.provider.extraAnnotations }}
+      annotations:
+        {{- toYaml .Values.provider.extraAnnotations | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- with .Values.provider.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "loadbalancer-provider-haproxy.serviceAccountName" . }}
+      {{- if .Values.provider.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.provider.podSecurityContext | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- if .Values.provider.extraEnvVars }}
+          env:
+          {{- range .Values.provider.extraEnvVars }}
+            - name: {{ .name }}
+              value: {{ .value }}
+          {{- end }}
+          {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.fullname" . }}-config
+          {{- if .Values.provider.securityContext }}
+          securityContext:
+            {{- toYaml .Values.provider.securityContext | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - process
+          {{- range .Values.provider.events.topics }}
+            - --event-topics={{ . }}
+          {{- end }}
+          ports:
+            - name: hc
+              containerPort: {{ .Values.provider.healthCheckPort | default "8080" }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /livez
+              port: hc
+          {{- if .Values.provider.events.auth.secretName  }}
+          volumeMounts:
+            - name: events-creds
+              mountPath: /creds
+              subPath: "creds"
+          {{- end }}
+          resources:
+            {{- toYaml .Values.provider.resources | nindent 12 }}
+      {{- with .Values.provider.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.provider.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.provider.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        {{- if .Values.provider.events.auth.secretName  }}
+        - name: events-creds
+          secret:
+            secretName: "{{ .Values.provider.events.auth.secretName }}"
+        {{- end }}
+            
