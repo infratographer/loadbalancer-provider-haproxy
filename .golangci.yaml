@@ -1,6 +1,10 @@
+run:
+  build-tags:
+    - testtools
+
 linters-settings:
   goimports:
-    local-prefixes: go.infratographer.com/loadbalanceroperator
+    local-prefixes: go.infratographer.com/loadbalancer-provider-haproxy
 
 linters:
   enable:
