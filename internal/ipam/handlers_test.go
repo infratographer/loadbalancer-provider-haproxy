@@ -5,9 +5,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"go.infratographer.com/loadbalancer-provider-haproxy/internal/ipam"
 	"go.infratographer.com/x/gidx"
 	"go.uber.org/zap"
+
+	"go.infratographer.com/loadbalancer-provider-haproxy/internal/ipam"
 )
 
 func TestRequestAddress(t *testing.T) {

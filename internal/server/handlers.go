@@ -4,10 +4,13 @@ import (
 	"strings"
 
 	"github.com/ThreeDotsLabs/watermill/message"
-	"go.infratographer.com/loadbalancer-provider-haproxy/internal/loadbalancer"
+
+	"golang.org/x/exp/slices"
+
 	"go.infratographer.com/x/events"
 	"go.infratographer.com/x/gidx"
-	"golang.org/x/exp/slices"
+
+	"go.infratographer.com/loadbalancer-provider-haproxy/internal/loadbalancer"
 )
 
 func (s *Server) ProcessChange(messages <-chan *message.Message) {

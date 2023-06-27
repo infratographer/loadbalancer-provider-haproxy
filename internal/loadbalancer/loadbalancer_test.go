@@ -5,11 +5,14 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"go.infratographer.com/loadbalancer-manager-haproxy/pkg/lbapi"
-	"go.infratographer.com/loadbalancer-provider-haproxy/internal/loadbalancer"
-	"go.infratographer.com/loadbalancer-provider-haproxy/internal/testutils/mock"
+
 	"go.infratographer.com/x/gidx"
 	"go.uber.org/zap"
+
+	"go.infratographer.com/loadbalancer-manager-haproxy/pkg/lbapi"
+
+	"go.infratographer.com/loadbalancer-provider-haproxy/internal/loadbalancer"
+	"go.infratographer.com/loadbalancer-provider-haproxy/internal/testutils/mock"
 )
 
 func TestNewLoadBalancer(t *testing.T) {
