@@ -1,3 +1,5 @@
+# Because the upstream goreleaser config expects there to be a schema.graphql file present, we need to manually maintain this config for now.
+
 # yaml-language-server: $schema=https://goreleaser.com/static/schema-pro.json
 
 
