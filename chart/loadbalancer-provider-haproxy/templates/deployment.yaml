@@ -50,7 +50,10 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "common.names.fullname" . }}-config
-          {{- if .Values.provider.securityContext }}
+          {{- if .Values.provider.extraEnvFrom }}
+            {{- toYaml .Values.provider.extraEnvFrom | nindent 12 }}
+         {{- end }} 
+         {{- if .Values.provider.securityContext }}
           securityContext:
             {{- toYaml .Values.provider.securityContext | nindent 12 }}
           {{- end }}

@@ -26,6 +26,7 @@ provider:
   replicas: 1
   extraLabels: []
   extraAnnotations: []
+  extraEnvFrom: {}
   extraEnvVars: []
   #    - name: LOADBALANCERPROVIDERHAPROXY_EVENTS_SUBSCRIBER_NATS_CREDSFILE
   #      value: "/creds"
