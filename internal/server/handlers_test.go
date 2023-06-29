@@ -6,6 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
+	"go.infratographer.com/ipam-api/pkg/ipamclient"
 	"go.infratographer.com/loadbalancer-manager-haproxy/pkg/lbapi"
 
 	"go.infratographer.com/x/echox"
@@ -38,6 +39,9 @@ func TestProcessChange(t *testing.T) { //nolint:govet
 	api := mock.DummyAPI(id.String())
 	api.Start()
 
+	ipamapi := mock.DummyIPAMAPI(id.String())
+	ipamapi.Start()
+
 	eSrv, err := echox.NewServer(zap.NewNop(), echox.Config{}, nil)
 	if err != nil {
 		errPanic("unable to initialize echo server", err)
@@ -50,6 +54,7 @@ func TestProcessChange(t *testing.T) { //nolint:govet
 
 	srv := server.Server{
 		APIClient:        lbapi.NewClient(api.URL),
+		IPAMClient:       ipamclient.NewClient(ipamapi.URL),
 		Context:          context.TODO(),
 		Echo:             eSrv,
 		Locations:        []string{"abcd1234"},
