@@ -54,7 +54,7 @@ func TestProcessChange(t *testing.T) { //nolint:govet
 		Echo:             eSrv,
 		Locations:        []string{"abcd1234"},
 		Logger:           zap.NewNop().Sugar(),
-		SubscriberConfig: SC,
+		SubscriberConfig: nats.SubscriberConfig,
 		Topics:           []string{"*.load-balancer"},
 	}
 
@@ -62,7 +62,7 @@ func TestProcessChange(t *testing.T) { //nolint:govet
 	// TODO: check that release does not exist
 
 	// publish a message to the change channel
-	p, _ := events.NewPublisher(PC)
+	p, _ := events.NewPublisher(nats.PublisherConfig)
 	_ = p.PublishChange(context.TODO(), "load-balancer", events.ChangeMessage{
 		EventType:            string(events.CreateChangeType),
 		SubjectID:            id,

@@ -29,7 +29,7 @@ func TestRun(t *testing.T) {
 		Echo:             eSrv,
 		Locations:        []string{"abcd1234"},
 		Logger:           zap.NewNop().Sugar(),
-		SubscriberConfig: SC,
+		SubscriberConfig: nats.SubscriberConfig,
 		Topics:           []string{"*.load-balancer-run"},
 	}
 

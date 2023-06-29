@@ -8,13 +8,15 @@ require (
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.16.0
 	github.com/stretchr/testify v1.8.4
-	go.infratographer.com/loadbalancer-manager-haproxy v0.0.0-20230612145135-7bf6c8074a9e
-	go.infratographer.com/x v0.3.1-0.20230605180922-67c1a1e705ac
+	go.infratographer.com/ipam-api v0.0.3-0.20230627135853-8acda8f15bbe
+	go.infratographer.com/loadbalancer-manager-haproxy v0.0.2-0.20230629042532-5524391bd0b6
+	go.infratographer.com/x v0.3.2
 	go.uber.org/zap v1.24.0
 	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1
 )
 
 require (
+	github.com/3th1nk/cidr v0.2.0 // indirect
 	github.com/MicahParks/keyfunc/v2 v2.0.3 // indirect
 	github.com/ThreeDotsLabs/watermill-nats/v2 v2.0.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -25,11 +27,15 @@ require (
 	github.com/garsue/watermillzap v1.2.0 // indirect
 	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
+	github.com/gofrs/flock v0.8.1 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang-jwt/jwt/v5 v5.0.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/google/renameio v1.0.1 // indirect
 	github.com/google/uuid v1.3.0 // indirect
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.14.0 // indirect
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.0 // indirect
+	github.com/haproxytech/config-parser/v4 v4.1.0 // indirect
+	github.com/haproxytech/go-logger v1.1.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jaevor/go-nanoid v1.3.0 // indirect

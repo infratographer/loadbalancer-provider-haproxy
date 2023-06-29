@@ -22,4 +22,5 @@ var AppConfig struct {
 // EventsConfig stores the configuration for a load-balancer-api events config
 type EventsConfig struct {
 	Subscriber events.SubscriberConfig
+	Publisher  events.PublisherConfig
 }

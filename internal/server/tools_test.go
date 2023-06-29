@@ -1,6 +1,3 @@
-//go:build testtools
-// +build testtools
-
 package server_test
 
 import (
@@ -8,19 +5,17 @@ import (
 	"os"
 	"testing"
 
-	"go.infratographer.com/x/events"
 	"go.infratographer.com/x/testing/eventtools"
 )
 
 var (
-	SC events.SubscriberConfig
-	PC events.PublisherConfig
+	nats *eventtools.TestNats
 )
 
 func setup() {
 	var err error
 
-	PC, SC, err = eventtools.NewNatsServer()
+	nats, err = eventtools.NewNatsServer()
 	if err != nil {
 		errPanic("failed to start nats server", err)
 	}

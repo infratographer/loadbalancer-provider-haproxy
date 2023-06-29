@@ -15,6 +15,7 @@ import (
 
 func (s *Server) ProcessChange(messages <-chan *message.Message) {
 	for msg := range messages {
+		s.Logger.Debugw("processing message")
 		m, err := events.UnmarshalChangeMessage(msg.Payload)
 		if err != nil {
 			s.Logger.Errorw("unable to unmarshal change message", "error", err, "messageID", msg.UUID, "message", msg.Payload)
