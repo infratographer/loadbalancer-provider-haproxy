@@ -8,11 +8,12 @@ import (
 	"os"
 	"testing"
 
-	"go.infratographer.com/x/events"
 	"go.infratographer.com/x/testing/eventtools"
 )
 
-var SC events.SubscriberConfig
+var (
+	nats *eventtools.TestNats
+)
 
 func TestMain(m *testing.M) {
 	setup()
@@ -24,7 +25,7 @@ func TestMain(m *testing.M) {
 
 func setup() {
 	var err error
-	_, SC, err = eventtools.NewNatsServer()
+	nats, err = eventtools.NewNatsServer()
 
 	if err != nil {
 		errPanic("failed to start nats server", err)

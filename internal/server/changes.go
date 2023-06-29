@@ -5,6 +5,7 @@ import (
 
 	"go.infratographer.com/loadbalancer-provider-haproxy/internal/ipam"
 	"go.infratographer.com/loadbalancer-provider-haproxy/internal/loadbalancer"
+
 	"go.infratographer.com/x/events"
 )
 
@@ -12,7 +13,6 @@ func (s *Server) processLoadBalancerChangeCreate(lb *loadbalancer.LoadBalancer) 
 	if ip, err := ipam.RequestAddress(s.Context, s.IPAMClient, s.Logger, s.IPBlock, lb.LoadBalancerID.String(), lb.LbData.LoadBalancer.Owner.ID); err != nil {
 		return err
 	} else {
-
 		msg := events.EventMessage{
 			EventType: "ip-address.assigned",
 			SubjectID: lb.LoadBalancerID,

@@ -27,15 +27,11 @@ require (
 	github.com/garsue/watermillzap v1.2.0 // indirect
 	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/gofrs/flock v0.8.1 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang-jwt/jwt/v5 v5.0.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
-	github.com/google/renameio v1.0.1 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.0 // indirect
-	github.com/haproxytech/config-parser/v4 v4.1.0 // indirect
-	github.com/haproxytech/go-logger v1.1.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jaevor/go-nanoid v1.3.0 // indirect
