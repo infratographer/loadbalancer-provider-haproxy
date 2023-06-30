@@ -40,20 +40,14 @@ func init() {
 	// only available as a CLI arg because it shouldn't be something that could accidentially end up in a config file or env var
 	processCmd.Flags().BoolVar(&processDevMode, "dev", false, "dev mode: disables all auth checks, pretty logging, etc.")
 
-	processCmd.PersistentFlags().String("api-endpoint", "http://localhost:7608", "endpoint for load balancer API. defaults to supergraph-endpoint if set")
+	processCmd.PersistentFlags().String("api-endpoint", "http://localhost:4000", "endpoint for configured supergraph.")
 	viperx.MustBindFlag(viper.GetViper(), "api-endpoint", processCmd.PersistentFlags().Lookup("api-endpoint"))
-
-	processCmd.PersistentFlags().String("ipam-endpoint", "http://localhost:7608", "endpoint for IPAM API. defaults to supergraph-endpoint if set")
-	viperx.MustBindFlag(viper.GetViper(), "ipam-endpoint", processCmd.PersistentFlags().Lookup("ipam-endpoint"))
-
-	processCmd.PersistentFlags().String("supergraph-endpoint", "", "endpoint for load balancer API")
-	viperx.MustBindFlag(viper.GetViper(), "supergraph-endpoint", processCmd.PersistentFlags().Lookup("supergraph-endpoint"))
 
 	processCmd.PersistentFlags().StringSlice("event-locations", nil, "location id(s) to filter events for")
 	viperx.MustBindFlag(viper.GetViper(), "event-locations", processCmd.PersistentFlags().Lookup("event-locations"))
 
-	processCmd.PersistentFlags().StringSlice("event-topics", nil, "event topics to subscribe to")
-	viperx.MustBindFlag(viper.GetViper(), "event-topics", processCmd.PersistentFlags().Lookup("event-topics"))
+	processCmd.PersistentFlags().StringSlice("change-topics", nil, "change topics to subscribe to")
+	viperx.MustBindFlag(viper.GetViper(), "change-topics", processCmd.PersistentFlags().Lookup("change-topics"))
 
 	processCmd.PersistentFlags().String("ipblock", "", "ip block id to use for requesting load balancer IPs")
 	viperx.MustBindFlag(viper.GetViper(), "ipblock", processCmd.PersistentFlags().Lookup("ipblock"))
@@ -84,22 +78,22 @@ func process(ctx context.Context, logger *zap.SugaredLogger) error {
 		Locations:        viper.GetStringSlice("event-locations"),
 		Logger:           logger,
 		SubscriberConfig: config.AppConfig.Events.Subscriber,
-		Topics:           viper.GetStringSlice("event-topics"),
+		ChangeTopics:     viper.GetStringSlice("change-topics"),
 		IPBlock:          viper.GetString("ipblock"),
 	}
 
 	// init lbapi client and ipam client
 	if config.AppConfig.OIDC.ClientID != "" {
 		oauthHTTPClient := oauth2x.NewClient(ctx, oauth2x.NewClientCredentialsTokenSrc(ctx, config.AppConfig.OIDC))
-		server.APIClient = lbapi.NewClient(determineEndpoint(viper.GetString("api-endpoint"), viper.GetString("supergraph-endpoint")),
+		server.APIClient = lbapi.NewClient((viper.GetString("api-endpoint")),
 			lbapi.WithHTTPClient(oauthHTTPClient),
 		)
-		server.IPAMClient = ipamclient.NewClient(determineEndpoint(viper.GetString("api-endpoint"), viper.GetString("supergraph-endpoint")),
+		server.IPAMClient = ipamclient.NewClient((viper.GetString("api-endpoint")),
 			ipamclient.WithHTTPClient(oauthHTTPClient),
 		)
 	} else {
-		server.APIClient = lbapi.NewClient(determineEndpoint(viper.GetString("api-endpoint"), viper.GetString("supergraph-endpoint")))
-		server.IPAMClient = ipamclient.NewClient(determineEndpoint(viper.GetString("ipam-endpoint"), viper.GetString("supergraph-endpoint")))
+		server.APIClient = lbapi.NewClient((viper.GetString("api-endpoint")))
+		server.IPAMClient = ipamclient.NewClient((viper.GetString("api-endpoint")))
 	}
 
 	pub, err := events.NewPublisher(config.AppConfig.Events.Publisher)
@@ -123,12 +117,4 @@ func process(ctx context.Context, logger *zap.SugaredLogger) error {
 	logger.Infof("exiting. Performing necessary cleanup", recvSig)
 
 	return nil
-}
-
-func determineEndpoint(endpoint string, supergraph string) string {
-	if supergraph != "" {
-		return supergraph
-	}
-
-	return endpoint
 }

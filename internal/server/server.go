@@ -24,7 +24,7 @@ type Server struct {
 	Logger           *zap.SugaredLogger
 	Publisher        *events.Publisher
 	SubscriberConfig events.SubscriberConfig
-	Topics           []string
+	ChangeTopics     []string
 
 	ChangeChannels []<-chan *message.Message
 }
@@ -54,7 +54,7 @@ func (s *Server) Run(ctx context.Context) error {
 func (s *Server) ConfigureSubscribers() error {
 	var ch []<-chan *message.Message
 
-	for _, topic := range s.Topics {
+	for _, topic := range s.ChangeTopics {
 		s.Logger.Debugw("subscribing to topic", "topic", topic)
 
 		csub, err := events.NewSubscriber(s.SubscriberConfig)

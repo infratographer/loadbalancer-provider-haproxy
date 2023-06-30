@@ -60,7 +60,7 @@ func TestProcessChange(t *testing.T) { //nolint:govet
 		Locations:        []string{"abcd1234"},
 		Logger:           zap.NewNop().Sugar(),
 		SubscriberConfig: nats.SubscriberConfig,
-		Topics:           []string{"*.load-balancer"},
+		ChangeTopics:     []string{"*.load-balancer"},
 	}
 
 	// TODO: check that namespace does not exist

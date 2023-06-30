@@ -44,7 +44,7 @@ provider:
       secretName: ""
       credsPath: "/creds"
     topicPrefix: "com.infratographer"
-    topics:
+    changeTopics:
       - "changes.*.lb"
       - "events.create.port"
 

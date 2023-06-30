@@ -30,7 +30,7 @@ func TestRun(t *testing.T) {
 		Locations:        []string{"abcd1234"},
 		Logger:           zap.NewNop().Sugar(),
 		SubscriberConfig: nats.SubscriberConfig,
-		Topics:           []string{"*.load-balancer-run"},
+		ChangeTopics:     []string{"*.load-balancer-run"},
 	}
 
 	err := srv.Run(srv.Context)

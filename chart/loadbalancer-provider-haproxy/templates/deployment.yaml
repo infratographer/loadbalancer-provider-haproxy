@@ -61,8 +61,8 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             - process
-          {{- range .Values.provider.events.topics }}
-            - --event-topics={{ . }}
+          {{- range .Values.provider.events.changeTopics }}
+            - --change-topics={{ . }}
           {{- end }}
           ports:
             - name: hc
