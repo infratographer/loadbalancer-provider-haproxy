@@ -67,12 +67,20 @@ func DummyIPAMAPI(id string) *httptest.Server {
 	server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
-		// TODO: Fill in IPAM mock
-		// out := fmt.Sprintf(`{
-		// 	"data": {},
-		// 	"errors": []
-		// }`, id)
-		out := ""
+		out := (`{
+			"data": {
+				"_entities": [
+				  {
+					"IPAddresses": [
+					  {
+						"ip": "192.168.10.5"
+					  },
+					]
+				  }
+				]
+			  }
+			}
+		}`)
 
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(out))
