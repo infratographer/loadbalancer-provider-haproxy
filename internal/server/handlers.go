@@ -14,6 +14,8 @@ import (
 )
 
 func (s *Server) ProcessChange(messages <-chan *message.Message) {
+	var lb *loadbalancer.LoadBalancer
+
 	for msg := range messages {
 		m, err := events.UnmarshalChangeMessage(msg.Payload)
 		if err != nil {
@@ -22,10 +24,17 @@ func (s *Server) ProcessChange(messages <-chan *message.Message) {
 		}
 
 		if slices.ContainsFunc(m.AdditionalSubjectIDs, s.LocationCheck) || len(s.Locations) == 0 {
-			lb, err := loadbalancer.NewLoadBalancer(s.Context, s.Logger, s.APIClient, m.SubjectID, m.AdditionalSubjectIDs)
-			if err != nil {
-				s.Logger.Errorw("unable to initialize loadbalancer", "error", err, "messageID", msg.UUID, "message", msg.Payload)
-				msg.Nack()
+			if m.EventType != string(events.DeleteChangeType) {
+				lb, err = loadbalancer.NewLoadBalancer(s.Context, s.Logger, s.APIClient, m.SubjectID, m.AdditionalSubjectIDs)
+				if err != nil {
+					s.Logger.Errorw("unable to initialize loadbalancer", "error", err, "messageID", msg.UUID, "message", msg.Payload)
+					msg.Nack()
+				}
+			} else {
+				lb = &loadbalancer.LoadBalancer{
+					LoadBalancerID: m.SubjectID,
+					LbType:         loadbalancer.TypeLB,
+				}
 			}
 
 			if lb.LbType != loadbalancer.TypeNoLB {

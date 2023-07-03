@@ -2,6 +2,8 @@ module go.infratographer.com/loadbalancer-provider-haproxy
 
 go 1.20
 
+replace go.infratographer.com/ipam-api => github.com/rizzza/ipam-api v0.0.0-20230630002828-9949ef66f0f9
+
 require (
 	github.com/ThreeDotsLabs/watermill v1.2.0
 	github.com/mitchellh/go-homedir v1.1.0
@@ -9,10 +11,10 @@ require (
 	github.com/spf13/viper v1.16.0
 	github.com/stretchr/testify v1.8.4
 	go.infratographer.com/ipam-api v0.0.3-0.20230627135853-8acda8f15bbe
-	go.infratographer.com/loadbalancer-manager-haproxy v0.0.2-0.20230629042532-5524391bd0b6
+	go.infratographer.com/loadbalancer-manager-haproxy v0.0.2
 	go.infratographer.com/x v0.3.2
 	go.uber.org/zap v1.24.0
-	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1
+	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df
 )
 
 require (
@@ -44,15 +46,15 @@ require (
 	github.com/lithammer/shortuuid/v3 v3.0.7 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.18 // indirect
+	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/minio/highwayhash v1.0.2 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/nats-io/jwt/v2 v2.4.1 // indirect
-	github.com/nats-io/nats-server/v2 v2.9.17 // indirect
-	github.com/nats-io/nats.go v1.26.0 // indirect
+	github.com/nats-io/nats-server/v2 v2.9.19 // indirect
+	github.com/nats-io/nats.go v1.27.1 // indirect
 	github.com/nats-io/nkeys v0.4.4 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect

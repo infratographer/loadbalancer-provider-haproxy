@@ -43,6 +43,9 @@ func init() {
 	processCmd.PersistentFlags().String("api-endpoint", "http://localhost:4000", "endpoint for configured supergraph.")
 	viperx.MustBindFlag(viper.GetViper(), "api-endpoint", processCmd.PersistentFlags().Lookup("api-endpoint"))
 
+	processCmd.PersistentFlags().String("ipam-endpoint", "http://localhost:4000", "endpoint for ipam api.")
+	viperx.MustBindFlag(viper.GetViper(), "ipam-endpoint", processCmd.PersistentFlags().Lookup("ipam-endpoint"))
+
 	processCmd.PersistentFlags().StringSlice("event-locations", nil, "location id(s) to filter events for")
 	viperx.MustBindFlag(viper.GetViper(), "event-locations", processCmd.PersistentFlags().Lookup("event-locations"))
 
@@ -88,12 +91,12 @@ func process(ctx context.Context, logger *zap.SugaredLogger) error {
 		server.APIClient = lbapi.NewClient((viper.GetString("api-endpoint")),
 			lbapi.WithHTTPClient(oauthHTTPClient),
 		)
-		server.IPAMClient = ipamclient.NewClient((viper.GetString("api-endpoint")),
+		server.IPAMClient = ipamclient.NewClient((viper.GetString("ipam-endpoint")),
 			ipamclient.WithHTTPClient(oauthHTTPClient),
 		)
 	} else {
 		server.APIClient = lbapi.NewClient((viper.GetString("api-endpoint")))
-		server.IPAMClient = ipamclient.NewClient((viper.GetString("api-endpoint")))
+		server.IPAMClient = ipamclient.NewClient((viper.GetString("ipam-endpoint")))
 	}
 
 	pub, err := events.NewPublisher(config.AppConfig.Events.Publisher)

@@ -33,5 +33,16 @@ func (s *Server) processLoadBalancerChangeDelete(lb *loadbalancer.LoadBalancer) 
 		return err
 	}
 
+	msg := events.EventMessage{
+		EventType: "ip-address.unassigned",
+		SubjectID: lb.LoadBalancerID,
+		Timestamp: time.Now().UTC(),
+	}
+
+	if err := s.Publisher.PublishEvent(s.Context, "load-balancer", msg); err != nil {
+		s.Logger.Debugw("failed to publish event", "error", err, "loadbalancer", lb.LoadBalancerID, "block", s.IPBlock)
+		return err
+	}
+
 	return nil
 }
