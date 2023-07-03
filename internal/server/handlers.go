@@ -48,6 +48,7 @@ func (s *Server) ProcessChange(messages <-chan *message.Message) {
 					}
 				case m.EventType == string(events.DeleteChangeType) && lb.LbType == loadbalancer.TypeLB:
 					s.Logger.Debugw("releasing address from loadbalancer", "loadbalancer", lb.LoadBalancerID.String())
+
 					if err := s.processLoadBalancerChangeDelete(lb); err != nil {
 						s.Logger.Errorw("handler unable to release address from loadbalancer", "error", err, "loadbalancer", lb.LoadBalancerID.String())
 						msg.Nack()
