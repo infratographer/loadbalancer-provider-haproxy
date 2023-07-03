@@ -67,20 +67,37 @@ func DummyIPAMAPI(id string) *httptest.Server {
 	server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
-		out := (`{
+		// out := (`{
+		// 	"data": {
+		// 		"_entities": [
+		// 		  {
+		// 			"IPAddresses": [
+		// 			  {
+		// 				"id": "ipaddr-2fiP_C_gnAORx_oDbNJAf",
+		// 				"ip": "192.168.10.5"
+		// 			  },
+		// 			]
+		// 		  }
+		// 		]
+		// 	  }
+		// 	}
+		// }`)
+
+		out := fmt.Sprintf(`{
 			"data": {
 				"_entities": [
 				  {
 					"IPAddresses": [
 					  {
+						"id": "%s",
 						"ip": "192.168.10.5"
-					  },
+					  }
 					]
 				  }
 				]
-			  }
-			}
-		}`)
+			},
+			"errors": []
+		}`, id)
 
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(out))
