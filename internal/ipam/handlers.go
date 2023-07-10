@@ -38,7 +38,7 @@ func ReleaseAddress(ctx context.Context, c *ipamclient.Client, logger *zap.Sugar
 		logger.Debugw("unable to get ip address for loadbalancer", "error", err, "load balancer", lbID)
 	}
 
-	for _, ip := range addr.Entities[0].IPAddressableFragment.IPAddresses {
+	for _, ip := range addr.LoadBalancer.IPAddresses {
 		if _, err := c.DeleteIPAddress(ctx, ip.ID); err != nil {
 			logger.Debugw("unable to release ip address from loadbalancer", "error", err, "load balancer", lbID, "IPAddressID", ip.ID, "IPAddress", ip.IP)
 			return err
