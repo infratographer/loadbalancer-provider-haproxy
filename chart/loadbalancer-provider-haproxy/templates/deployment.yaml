@@ -64,6 +64,7 @@ spec:
           {{- range .Values.provider.events.changeTopics }}
             - --change-topics={{ . }}
           {{- end }}
+            - --event-locations={{ .Values.provider.events.location }}
           ports:
             - name: hc
               containerPort: {{ .Values.provider.healthCheckPort | default "8080" }}

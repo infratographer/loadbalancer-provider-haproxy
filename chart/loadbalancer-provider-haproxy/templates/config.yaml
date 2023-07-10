@@ -9,3 +9,4 @@ data:
   LOADBALANCERPROVIDERHAPROXY_EVENTS_SUBSCRIBER_URL: "{{ .Values.provider.events.connectionURL }}"
   LOADBALANCERPROVIDERHAPROXY_EVENTS_QUEUEGROUP: "{{ .Values.provider.events.queueGroup }}"
   LOADBALANCERPROVIDERHAPROXY_API_ENDPOINT: "{{ .Values.provider.api.endpoint }}"
+  LOADBALANCERPROVIDERHAPROXY_IPBLOCK: "{{ .Values.provider.ipBlock }}"

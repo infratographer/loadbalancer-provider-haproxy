@@ -22,6 +22,7 @@ service:
   port: 80
 
 provider:
+  ipBlock: ""
   healthCheckPort: "8080"
   replicas: 1
   extraLabels: []
@@ -47,6 +48,8 @@ provider:
     changeTopics:
       - "changes.*.lb"
       - "events.create.port"
+    location: ""
+
 
 reloader:
   enabled: false
