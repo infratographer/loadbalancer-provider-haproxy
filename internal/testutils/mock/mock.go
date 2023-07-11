@@ -69,8 +69,9 @@ func DummyIPAMAPI(id string) *httptest.Server {
 
 		// out := (`{
 		// 	"data": {
-		// 		"_entities": [
+		// 	  "loadBalancer": {
 		// 		  {
+		// 			"name": "a-very-nice-lb",
 		// 			"IPAddresses": [
 		// 			  {
 		// 				"id": "ipaddr-2fiP_C_gnAORx_oDbNJAf",
@@ -85,8 +86,8 @@ func DummyIPAMAPI(id string) *httptest.Server {
 
 		out := fmt.Sprintf(`{
 			"data": {
-				"_entities": [
-				  {
+				  "loadBalancer": {
+					"name": "a-very-nice-lb",
 					"IPAddresses": [
 					  {
 						"id": "%s",
@@ -94,7 +95,6 @@ func DummyIPAMAPI(id string) *httptest.Server {
 					  }
 					]
 				  }
-				]
 			},
 			"errors": []
 		}`, id)
