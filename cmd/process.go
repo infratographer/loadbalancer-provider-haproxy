@@ -12,9 +12,9 @@ import (
 
 	"go.infratographer.com/ipam-api/pkg/ipamclient"
 	"go.infratographer.com/loadbalancer-manager-haproxy/pkg/lbapi"
-	"go.infratographer.com/loadbalancer-manager-haproxy/x/oauth2x"
 	"go.infratographer.com/x/echox"
 	"go.infratographer.com/x/events"
+	"go.infratographer.com/x/oauth2x"
 	"go.infratographer.com/x/versionx"
 	"go.infratographer.com/x/viperx"
 
@@ -86,8 +86,8 @@ func process(ctx context.Context, logger *zap.SugaredLogger) error {
 	}
 
 	// init lbapi client and ipam client
-	if config.AppConfig.OIDC.ClientID != "" {
-		oauthHTTPClient := oauth2x.NewClient(ctx, oauth2x.NewClientCredentialsTokenSrc(ctx, config.AppConfig.OIDC))
+	if config.AppConfig.OIDC.Client.TokenURL != "" {
+		oauthHTTPClient := oauth2x.NewClient(ctx, oauth2x.NewClientCredentialsTokenSrc(ctx, config.AppConfig.OIDC.Client))
 		server.APIClient = lbapi.NewClient((viper.GetString("api-endpoint")),
 			lbapi.WithHTTPClient(oauthHTTPClient),
 		)
