@@ -18,6 +18,7 @@ func NewLoadBalancer(ctx context.Context, logger *zap.SugaredLogger, client *lba
 		data, err := client.GetLoadBalancer(ctx, l.LoadBalancerID.String())
 		if err != nil {
 			logger.Errorw("unable to get loadbalancer from API", "error", err)
+
 			return nil, err
 		}
 
