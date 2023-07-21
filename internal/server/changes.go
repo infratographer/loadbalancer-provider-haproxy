@@ -10,18 +10,21 @@ import (
 )
 
 func (s *Server) processLoadBalancerChangeCreate(lb *loadbalancer.LoadBalancer) error {
-	if ip, err := ipam.RequestAddress(s.Context, s.IPAMClient, s.Logger, s.IPBlock, lb.LoadBalancerID.String(), lb.LbData.LoadBalancer.Owner.ID); err != nil {
-		return err
-	} else {
-		msg := events.EventMessage{
-			EventType: "ip-address.assigned",
-			SubjectID: lb.LoadBalancerID,
-			Timestamp: time.Now().UTC(),
-		}
-
-		if err := s.Publisher.PublishEvent(s.Context, "load-balancer", msg); err != nil {
-			s.Logger.Debugw("failed to publish event", "error", err, "ip", ip, "loadbalancer", lb.LoadBalancerID, "block", s.IPBlock)
+	// for now, limit to one IP address per loadbalancer
+	if len(lb.LbData.LoadBalancer.IPAddresses) == 0 {
+		if ip, err := ipam.RequestAddress(s.Context, s.IPAMClient, s.Logger, s.IPBlock, lb.LoadBalancerID.String(), lb.LbData.LoadBalancer.Owner.ID); err != nil {
 			return err
+		} else {
+			msg := events.EventMessage{
+				EventType: "ip-address.assigned",
+				SubjectID: lb.LoadBalancerID,
+				Timestamp: time.Now().UTC(),
+			}
+
+			if err := s.Publisher.PublishEvent(s.Context, "load-balancer", msg); err != nil {
+				s.Logger.Debugw("failed to publish event", "error", err, "ip", ip, "loadbalancer", lb.LoadBalancerID, "block", s.IPBlock)
+				return err
+			}
 		}
 	}
 
