@@ -12,4 +12,4 @@ data:
   LOADBALANCERPROVIDERHAPROXY_EVENTS_QUEUEGROUP: "{{ .Values.provider.events.queueGroup }}"
   LOADBALANCERPROVIDERHAPROXY_API_ENDPOINT: "{{ .Values.provider.api.endpoint }}"
   LOADBALANCERPROVIDERHAPROXY_IPBLOCK: "{{ .Values.provider.ipBlock }}"
-  LOADBALANCERPROVIDERHAPROXY_OIDC_CLIENT_TOKEN_URL: "{{ .Values.provider.api.oidc.client.tokenURL }}"
+  LOADBALANCERPROVIDERHAPROXY_OIDC_CLIENT_ISSUER: "{{ .Values.provider.api.oidc.client.issuer }}"

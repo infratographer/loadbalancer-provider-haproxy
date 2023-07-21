@@ -39,7 +39,7 @@ provider:
     oidc:
       enabled: false
       client:
-        tokenURL: ""
+        issuer: ""
 
   events:
     queueGroup: "my-queue-group"

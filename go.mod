@@ -12,7 +12,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	go.infratographer.com/ipam-api v0.0.3-0.20230627135853-8acda8f15bbe
 	go.infratographer.com/loadbalancer-manager-haproxy v0.0.4
-	go.infratographer.com/x v0.3.3-0.20230714174858-099a72673ea8
+	go.infratographer.com/x v0.3.4
 	go.uber.org/zap v1.24.0
 	golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1
 )

@@ -86,8 +86,13 @@ func process(ctx context.Context, logger *zap.SugaredLogger) error {
 	}
 
 	// init lbapi client and ipam client
-	if config.AppConfig.OIDC.Client.TokenURL != "" {
-		oauthHTTPClient := oauth2x.NewClient(ctx, oauth2x.NewClientCredentialsTokenSrc(ctx, config.AppConfig.OIDC.Client))
+	if config.AppConfig.OIDC.Client.Issuer != "" {
+		oidcTs, err := oauth2x.NewClientCredentialsTokenSrc(ctx, config.AppConfig.OIDC.Client)
+		if err != nil {
+			logger.Fatalw("failed to create oauth2 token source", "error", err)
+		}
+
+		oauthHTTPClient := oauth2x.NewClient(ctx, oidcTs)
 		server.APIClient = lbapi.NewClient((viper.GetString("api-endpoint")),
 			lbapi.WithHTTPClient(oauthHTTPClient),
 		)
