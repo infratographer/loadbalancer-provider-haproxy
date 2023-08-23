@@ -13,17 +13,16 @@ import (
 // AppConfig contains the application configuration structure.
 var AppConfig struct {
 	Logging loggingx.Config
-	Events  EventsConfig
+	Events  events.Config
 	Server  echox.Config
 	Tracing otelx.Config
 	OIDC    OIDCClientConfig
 }
 
 // EventsConfig stores the configuration for a load-balancer-api events config
-type EventsConfig struct {
-	Subscriber events.SubscriberConfig
-	Publisher  events.PublisherConfig
-}
+// type EventsConfig struct {
+// 	events.Config `mapstructure:",squash"`
+// }
 
 // OIDCClientConfig stores the configuration for an OIDC client
 type OIDCClientConfig struct {

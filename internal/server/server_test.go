@@ -6,6 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"go.infratographer.com/x/echox"
+	"go.infratographer.com/x/events"
 	"go.infratographer.com/x/gidx"
 	"go.uber.org/zap"
 
@@ -23,17 +24,31 @@ func TestRun(t *testing.T) {
 
 	eSrv, _ := echox.NewServer(zap.NewNop(), echox.Config{}, nil)
 
-	srv := server.Server{
-		APIClient:        lbapi.NewClient(api.URL),
-		Context:          context.TODO(),
-		Echo:             eSrv,
-		Locations:        []string{"abcd1234"},
-		Logger:           zap.NewNop().Sugar(),
-		SubscriberConfig: nats.SubscriberConfig,
-		ChangeTopics:     []string{"*.load-balancer-run"},
+	config := events.Config{
+		NATS: events.NATSConfig{
+			URL:             nats.Server.ClientURL(),
+			SubscribePrefix: "com.infratographer.testing",
+			PublishPrefix:   "com.infratographer.testing",
+			Source:          "loadbalancerproviderhaproxy",
+		},
 	}
 
-	err := srv.Run(srv.Context)
+	conn, err := events.NewConnection(config)
+	if err != nil {
+		errPanic("unable to create connection", err)
+	}
+
+	srv := server.Server{
+		APIClient:    lbapi.NewClient(api.URL),
+		Context:      context.TODO(),
+		Echo:         eSrv,
+		Connection:   conn,
+		Locations:    []string{"abcd1234"},
+		Logger:       zap.NewNop().Sugar(),
+		ChangeTopics: []string{"*.load-balancer"},
+	}
+
+	err = srv.Run(srv.Context)
 
 	assert.Nil(t, err)
 }

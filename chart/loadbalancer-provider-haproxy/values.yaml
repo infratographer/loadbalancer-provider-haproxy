@@ -40,7 +40,8 @@ provider:
       enabled: false
       client:
         issuer: ""
-
+  ipam:
+    endpoint: "https://localhost:7609/query"
   events:
     queueGroup: "my-queue-group"
     connectionURL: "nats://my-events-cluster.example.com:4222"

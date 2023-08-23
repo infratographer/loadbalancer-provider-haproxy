@@ -55,8 +55,8 @@ func init() {
 	processCmd.PersistentFlags().String("ipblock", "", "ip block id to use for requesting load balancer IPs")
 	viperx.MustBindFlag(viper.GetViper(), "ipblock", processCmd.PersistentFlags().Lookup("ipblock"))
 
-	events.MustViperFlagsForPublisher(viper.GetViper(), processCmd.Flags(), appName)
-	events.MustViperFlagsForSubscriber(viper.GetViper(), processCmd.Flags())
+	events.MustViperFlags(viper.GetViper(), processCmd.Flags(), appName)
+	// events.MustViperFlagsForSubscriber(viper.GetViper(), processCmd.Flags())
 	oauth2x.MustViperFlags(viper.GetViper(), processCmd.Flags())
 
 	rootCmd.AddCommand(processCmd)
@@ -74,15 +74,28 @@ func process(ctx context.Context, logger *zap.SugaredLogger) error {
 		logger.Fatal("failed to initialize new server", zap.Error(err))
 	}
 
+	conn, err := events.NewConnection(config.AppConfig.Events, events.WithLogger(logger))
+	if err != nil {
+		logger.Fatalw("failed to initialize events", "error", err)
+	}
+
+	// subscriber, err := pubsub.NewSubscriber(ctx, events, engine,
+	// 	pubsub.WithLogger(logger),
+	// )
+	// if err != nil {
+	// 	logger.Fatalw("unable to initialize subscriber", "error", err)
+	// }
+
 	server := &server.Server{
-		Context:          cx,
-		Debug:            viper.GetBool("logging.debug"),
-		Echo:             eSrv,
-		Locations:        viper.GetStringSlice("event-locations"),
-		Logger:           logger,
-		SubscriberConfig: config.AppConfig.Events.Subscriber,
-		ChangeTopics:     viper.GetStringSlice("change-topics"),
-		IPBlock:          viper.GetString("ipblock"),
+		Context:   cx,
+		Debug:     viper.GetBool("logging.debug"),
+		Echo:      eSrv,
+		Locations: viper.GetStringSlice("event-locations"),
+		Logger:    logger,
+		// SubscriberConfig: config.AppConfig.Events.Subscriber,
+		// Subscriber:   subscriber,
+		ChangeTopics: viper.GetStringSlice("change-topics"),
+		IPBlock:      viper.GetString("ipblock"),
 	}
 
 	// init lbapi client and ipam client
@@ -104,12 +117,9 @@ func process(ctx context.Context, logger *zap.SugaredLogger) error {
 		server.IPAMClient = ipamclient.NewClient((viper.GetString("ipam-endpoint")))
 	}
 
-	pub, err := events.NewPublisher(config.AppConfig.Events.Publisher)
-	if err != nil {
-		logger.Fatalw("failed to create publisher", "error", err)
-	}
+	server.Connection = conn
 
-	server.Publisher = pub
+	// server.Publisher = pub
 
 	if err := server.Run(cx); err != nil {
 		logger.Fatalw("failed starting server", "error", err)

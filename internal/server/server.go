@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 
-	"github.com/ThreeDotsLabs/watermill/message"
 	"go.infratographer.com/loadbalancer-manager-haproxy/pkg/lbapi"
 	"go.infratographer.com/x/echox"
 	"go.infratographer.com/x/events"
@@ -14,19 +13,20 @@ import (
 
 // Server holds options for server connectivity and settings
 type Server struct {
-	APIClient        *lbapi.Client
-	IPAMClient       *ipamclient.Client
-	Context          context.Context
-	Debug            bool
-	Echo             *echox.Server
-	IPBlock          string
-	Locations        []string
-	Logger           *zap.SugaredLogger
-	Publisher        *events.Publisher
-	SubscriberConfig events.SubscriberConfig
-	ChangeTopics     []string
+	APIClient  *lbapi.Client
+	IPAMClient *ipamclient.Client
+	Context    context.Context
+	Debug      bool
+	Echo       *echox.Server
+	IPBlock    string
+	Locations  []string
+	Logger     *zap.SugaredLogger
+	Publisher  *events.Publisher
+	// SubscriberConfig events.SubscriberConfig
+	Connection   events.Connection
+	ChangeTopics []string
 
-	ChangeChannels []<-chan *message.Message
+	ChangeChannels []<-chan events.Message[events.ChangeMessage]
 }
 
 // Run will start the server queue connections and healthcheck endpoints
@@ -52,18 +52,12 @@ func (s *Server) Run(ctx context.Context) error {
 }
 
 func (s *Server) ConfigureSubscribers() error {
-	var ch []<-chan *message.Message
+	var ch []<-chan events.Message[events.ChangeMessage]
 
 	for _, topic := range s.ChangeTopics {
 		s.Logger.Debugw("subscribing to topic", "topic", topic)
 
-		csub, err := events.NewSubscriber(s.SubscriberConfig)
-		if err != nil {
-			s.Logger.Errorw("unable to create change subscriber", "error", err, "topic", topic)
-			return errSubscriberCreate
-		}
-
-		c, err := csub.SubscribeChanges(s.Context, topic)
+		c, err := s.Connection.SubscribeChanges(s.Context, topic)
 		if err != nil {
 			s.Logger.Errorw("unable to subscribe to change topic", "error", err, "topic", topic, "type", "change")
 			return errSubscriptionCreate

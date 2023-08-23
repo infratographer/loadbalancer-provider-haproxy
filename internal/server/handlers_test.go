@@ -52,53 +52,81 @@ func TestProcessChange(t *testing.T) { //nolint:govet
 		errPanic("unable to parse location", err)
 	}
 
+	config := events.Config{
+		NATS: events.NATSConfig{
+			URL:             nats.Server.ClientURL(),
+			SubscribePrefix: "com.infratographer.testing",
+			PublishPrefix:   "com.infratographer.testing",
+			Source:          "loadbalancerproviderhaproxy",
+		},
+	}
+
+	conn, err := events.NewConnection(config)
+	if err != nil {
+		errPanic("unable to create connection", err)
+	}
+
 	srv := server.Server{
-		APIClient:        lbapi.NewClient(api.URL),
-		IPAMClient:       ipamclient.NewClient(ipamapi.URL),
-		Context:          context.TODO(),
-		Echo:             eSrv,
-		Locations:        []string{"abcd1234"},
-		Logger:           zap.NewNop().Sugar(),
-		SubscriberConfig: nats.SubscriberConfig,
-		ChangeTopics:     []string{"*.load-balancer"},
+		APIClient:    lbapi.NewClient(api.URL),
+		IPAMClient:   ipamclient.NewClient(ipamapi.URL),
+		Context:      context.TODO(),
+		Echo:         eSrv,
+		Connection:   conn,
+		Locations:    []string{"abcd1234"},
+		Logger:       zap.NewNop().Sugar(),
+		ChangeTopics: []string{"*.load-balancer"},
 	}
 
 	// TODO: check that namespace does not exist
 	// TODO: check that release does not exist
 
 	// publish a message to the change channel
-	p, _ := events.NewPublisher(nats.PublisherConfig)
-	_ = p.PublishChange(context.TODO(), "load-balancer", events.ChangeMessage{
+	_, err = srv.Connection.PublishChange(context.TODO(), "load-balancer", events.ChangeMessage{
 		EventType:            string(events.CreateChangeType),
 		SubjectID:            id,
 		AdditionalSubjectIDs: []gidx.PrefixedID{loc},
 	})
+	if err != nil {
+		errPanic("unable to publish change", err)
+	}
 
-	_ = srv.ConfigureSubscribers()
+	err = srv.ConfigureSubscribers()
+	if err != nil {
+		errPanic("unable to configure subscribers", err)
+	}
 
 	go srv.ProcessChange(srv.ChangeChannels[0])
 
-	_ = p.PublishChange(context.TODO(), "load-balancer", events.ChangeMessage{
+	_, err = srv.Connection.PublishChange(context.TODO(), "load-balancer", events.ChangeMessage{
 		EventType:            string(events.UpdateChangeType),
 		AdditionalSubjectIDs: []gidx.PrefixedID{loc},
 		SubjectID:            id,
 	})
+	if err != nil {
+		errPanic("unable to publish change", err)
+	}
 
 	// TODO: check that namespace exists
 	// TODO: check that release exists
 	// TODO: verify some update, maybe with values file
 
-	_ = p.PublishChange(context.TODO(), "load-balancer", events.ChangeMessage{
+	_, err = srv.Connection.PublishChange(context.TODO(), "load-balancer", events.ChangeMessage{
 		EventType:            string(events.UpdateChangeType),
 		AdditionalSubjectIDs: []gidx.PrefixedID{id, loc},
 		SubjectID:            gidx.MustNewID("loadprt"),
 	})
+	if err != nil {
+		errPanic("unable to publish change", err)
+	}
 
 	//TODO: verify some update exists
 
-	_ = p.PublishChange(context.TODO(), "load-balancer", events.ChangeMessage{
+	_, err = srv.Connection.PublishChange(context.TODO(), "load-balancer", events.ChangeMessage{
 		EventType:            string(events.DeleteChangeType),
 		AdditionalSubjectIDs: []gidx.PrefixedID{loc},
 		SubjectID:            id,
 	})
+	if err != nil {
+		errPanic("unable to publish change", err)
+	}
 }
