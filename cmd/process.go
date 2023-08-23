@@ -79,21 +79,13 @@ func process(ctx context.Context, logger *zap.SugaredLogger) error {
 		logger.Fatalw("failed to initialize events", "error", err)
 	}
 
-	// subscriber, err := pubsub.NewSubscriber(ctx, events, engine,
-	// 	pubsub.WithLogger(logger),
-	// )
-	// if err != nil {
-	// 	logger.Fatalw("unable to initialize subscriber", "error", err)
-	// }
-
 	server := &server.Server{
-		Context:   cx,
-		Debug:     viper.GetBool("logging.debug"),
-		Echo:      eSrv,
-		Locations: viper.GetStringSlice("event-locations"),
-		Logger:    logger,
-		// SubscriberConfig: config.AppConfig.Events.Subscriber,
-		// Subscriber:   subscriber,
+		Context:      cx,
+		Debug:        viper.GetBool("logging.debug"),
+		Echo:         eSrv,
+		Locations:    viper.GetStringSlice("event-locations"),
+		Logger:       logger,
+		Connection:   conn,
 		ChangeTopics: viper.GetStringSlice("change-topics"),
 		IPBlock:      viper.GetString("ipblock"),
 	}
@@ -116,10 +108,6 @@ func process(ctx context.Context, logger *zap.SugaredLogger) error {
 		server.APIClient = lbapi.NewClient((viper.GetString("api-endpoint")))
 		server.IPAMClient = ipamclient.NewClient((viper.GetString("ipam-endpoint")))
 	}
-
-	server.Connection = conn
-
-	// server.Publisher = pub
 
 	if err := server.Run(cx); err != nil {
 		logger.Fatalw("failed starting server", "error", err)

@@ -19,11 +19,6 @@ var AppConfig struct {
 	OIDC    OIDCClientConfig
 }
 
-// EventsConfig stores the configuration for a load-balancer-api events config
-// type EventsConfig struct {
-// 	events.Config `mapstructure:",squash"`
-// }
-
 // OIDCClientConfig stores the configuration for an OIDC client
 type OIDCClientConfig struct {
 	Client oauth2x.Config

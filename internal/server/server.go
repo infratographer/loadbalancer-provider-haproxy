@@ -13,16 +13,15 @@ import (
 
 // Server holds options for server connectivity and settings
 type Server struct {
-	APIClient  *lbapi.Client
-	IPAMClient *ipamclient.Client
-	Context    context.Context
-	Debug      bool
-	Echo       *echox.Server
-	IPBlock    string
-	Locations  []string
-	Logger     *zap.SugaredLogger
-	Publisher  *events.Publisher
-	// SubscriberConfig events.SubscriberConfig
+	APIClient    *lbapi.Client
+	IPAMClient   *ipamclient.Client
+	Context      context.Context
+	Debug        bool
+	Echo         *echox.Server
+	IPBlock      string
+	Locations    []string
+	Logger       *zap.SugaredLogger
+	Publisher    *events.Publisher
 	Connection   events.Connection
 	ChangeTopics []string
 
