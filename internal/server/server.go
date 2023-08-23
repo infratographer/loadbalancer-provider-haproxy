@@ -13,17 +13,17 @@ import (
 
 // Server holds options for server connectivity and settings
 type Server struct {
-	APIClient    *lbapi.Client
-	IPAMClient   *ipamclient.Client
-	Context      context.Context
-	Debug        bool
-	Echo         *echox.Server
-	IPBlock      string
-	Locations    []string
-	Logger       *zap.SugaredLogger
-	Publisher    *events.Publisher
-	Connection   events.Connection
-	ChangeTopics []string
+	APIClient        *lbapi.Client
+	IPAMClient       *ipamclient.Client
+	Context          context.Context
+	Debug            bool
+	Echo             *echox.Server
+	IPBlock          string
+	Locations        []string
+	Logger           *zap.SugaredLogger
+	Publisher        *events.Publisher
+	EventsConnection events.Connection
+	ChangeTopics     []string
 
 	ChangeChannels []<-chan events.Message[events.ChangeMessage]
 }
@@ -56,7 +56,7 @@ func (s *Server) ConfigureSubscribers() error {
 	for _, topic := range s.ChangeTopics {
 		s.Logger.Debugw("subscribing to topic", "topic", topic)
 
-		c, err := s.Connection.SubscribeChanges(s.Context, topic)
+		c, err := s.EventsConnection.SubscribeChanges(s.Context, topic)
 		if err != nil {
 			s.Logger.Errorw("unable to subscribe to change topic", "error", err, "topic", topic, "type", "change")
 			return errSubscriptionCreate

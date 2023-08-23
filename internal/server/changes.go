@@ -21,7 +21,7 @@ func (s *Server) processLoadBalancerChangeCreate(lb *loadbalancer.LoadBalancer) 
 				Timestamp: time.Now().UTC(),
 			}
 
-			if _, err := s.Connection.PublishEvent(s.Context, "load-balancer", msg); err != nil {
+			if _, err := s.EventsConnection.PublishEvent(s.Context, "load-balancer", msg); err != nil {
 				s.Logger.Debugw("failed to publish event", "error", err, "ip", ip, "loadbalancer", lb.LoadBalancerID, "block", s.IPBlock)
 				return err
 			}
@@ -42,7 +42,7 @@ func (s *Server) processLoadBalancerChangeDelete(lb *loadbalancer.LoadBalancer) 
 		Timestamp: time.Now().UTC(),
 	}
 
-	if _, err := s.Connection.PublishEvent(s.Context, "load-balancer", msg); err != nil {
+	if _, err := s.EventsConnection.PublishEvent(s.Context, "load-balancer", msg); err != nil {
 		s.Logger.Debugw("failed to publish event", "error", err, "loadbalancer", lb.LoadBalancerID, "block", s.IPBlock)
 		return err
 	}

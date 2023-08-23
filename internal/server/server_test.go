@@ -39,13 +39,13 @@ func TestRun(t *testing.T) {
 	}
 
 	srv := server.Server{
-		APIClient:    lbapi.NewClient(api.URL),
-		Context:      context.TODO(),
-		Echo:         eSrv,
-		Connection:   conn,
-		Locations:    []string{"abcd1234"},
-		Logger:       zap.NewNop().Sugar(),
-		ChangeTopics: []string{"*.load-balancer"},
+		APIClient:        lbapi.NewClient(api.URL),
+		Context:          context.TODO(),
+		Echo:             eSrv,
+		EventsConnection: conn,
+		Locations:        []string{"abcd1234"},
+		Logger:           zap.NewNop().Sugar(),
+		ChangeTopics:     []string{"*.load-balancer"},
 	}
 
 	err = srv.Run(srv.Context)

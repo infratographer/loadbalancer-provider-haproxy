@@ -56,7 +56,6 @@ func init() {
 	viperx.MustBindFlag(viper.GetViper(), "ipblock", processCmd.PersistentFlags().Lookup("ipblock"))
 
 	events.MustViperFlags(viper.GetViper(), processCmd.Flags(), appName)
-	// events.MustViperFlagsForSubscriber(viper.GetViper(), processCmd.Flags())
 	oauth2x.MustViperFlags(viper.GetViper(), processCmd.Flags())
 
 	rootCmd.AddCommand(processCmd)
@@ -80,14 +79,14 @@ func process(ctx context.Context, logger *zap.SugaredLogger) error {
 	}
 
 	server := &server.Server{
-		Context:      cx,
-		Debug:        viper.GetBool("logging.debug"),
-		Echo:         eSrv,
-		Locations:    viper.GetStringSlice("event-locations"),
-		Logger:       logger,
-		Connection:   conn,
-		ChangeTopics: viper.GetStringSlice("change-topics"),
-		IPBlock:      viper.GetString("ipblock"),
+		Context:          cx,
+		Debug:            viper.GetBool("logging.debug"),
+		Echo:             eSrv,
+		Locations:        viper.GetStringSlice("event-locations"),
+		Logger:           logger,
+		EventsConnection: conn,
+		ChangeTopics:     viper.GetStringSlice("change-topics"),
+		IPBlock:          viper.GetString("ipblock"),
 	}
 
 	// init lbapi client and ipam client
