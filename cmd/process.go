@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/viper"
 
 	"go.infratographer.com/ipam-api/pkg/ipamclient"
-	"go.infratographer.com/loadbalancer-manager-haproxy/pkg/lbapi"
+	lbapi "go.infratographer.com/load-balancer-api/pkg/client"
 	"go.infratographer.com/x/echox"
 	"go.infratographer.com/x/events"
 	"go.infratographer.com/x/oauth2x"

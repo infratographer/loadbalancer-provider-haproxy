@@ -11,8 +11,8 @@ import (
 
 func (s *Server) processLoadBalancerChangeCreate(lb *loadbalancer.LoadBalancer) error {
 	// for now, limit to one IP address per loadbalancer
-	if len(lb.LbData.LoadBalancer.IPAddresses) == 0 {
-		if ip, err := ipam.RequestAddress(s.Context, s.IPAMClient, s.Logger, s.IPBlock, lb.LoadBalancerID.String(), lb.LbData.LoadBalancer.Owner.ID); err != nil {
+	if len(lb.LbData.IPAddresses) == 0 {
+		if ip, err := ipam.RequestAddress(s.Context, s.IPAMClient, s.Logger, s.IPBlock, lb.LoadBalancerID.String(), lb.LbData.Owner.ID); err != nil {
 			return err
 		} else {
 			msg := events.EventMessage{

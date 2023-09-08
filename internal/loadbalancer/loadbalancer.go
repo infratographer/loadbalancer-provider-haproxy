@@ -4,7 +4,7 @@ package loadbalancer
 import (
 	"context"
 
-	"go.infratographer.com/loadbalancer-manager-haproxy/pkg/lbapi"
+	lbapi "go.infratographer.com/load-balancer-api/pkg/client"
 	"go.infratographer.com/x/gidx"
 	"go.uber.org/zap"
 )
