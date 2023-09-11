@@ -48,9 +48,16 @@ func (s *Server) ProcessChange(messages <-chan events.Message[events.ChangeMessa
 					continue
 				}
 			} else {
+				loc := s.GetLocation(m.AdditionalSubjectIDs)
+
 				lb = &loadbalancer.LoadBalancer{
 					LoadBalancerID: m.SubjectID,
 					LbType:         loadbalancer.TypeLB,
+					LbData: &lbapi.LoadBalancer{
+						Location: lbapi.LocationNode{
+							ID: loc.String(),
+						},
+					},
 				}
 			}
 
@@ -97,4 +104,14 @@ func (s *Server) LocationCheck(i gidx.PrefixedID) bool {
 	}
 
 	return false
+}
+
+func (s *Server) GetLocation(subjs []gidx.PrefixedID) gidx.PrefixedID {
+	for _, subj := range subjs {
+		if s.LocationCheck(subj) {
+			return subj
+		}
+	}
+
+	return gidx.PrefixedID("")
 }
