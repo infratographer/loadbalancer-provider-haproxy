@@ -7,6 +7,7 @@ import (
 	"go.infratographer.com/loadbalancer-provider-haproxy/internal/loadbalancer"
 
 	"go.infratographer.com/x/events"
+	"go.infratographer.com/x/gidx"
 )
 
 func (s *Server) processLoadBalancerChangeCreate(lb *loadbalancer.LoadBalancer) error {
@@ -19,6 +20,15 @@ func (s *Server) processLoadBalancerChangeCreate(lb *loadbalancer.LoadBalancer) 
 				EventType: "ip-address.assigned",
 				SubjectID: lb.LoadBalancerID,
 				Timestamp: time.Now().UTC(),
+			}
+
+			for _, loc := range s.Locations {
+				locid, err := gidx.Parse(loc)
+				if err != nil {
+					return err
+				}
+
+				msg.AdditionalSubjectIDs = append(msg.AdditionalSubjectIDs, locid)
 			}
 
 			if _, err := s.EventsConnection.PublishEvent(s.Context, "load-balancer", msg); err != nil {
@@ -40,6 +50,15 @@ func (s *Server) processLoadBalancerChangeDelete(lb *loadbalancer.LoadBalancer) 
 		EventType: "ip-address.unassigned",
 		SubjectID: lb.LoadBalancerID,
 		Timestamp: time.Now().UTC(),
+	}
+
+	for _, loc := range s.Locations {
+		locid, err := gidx.Parse(loc)
+		if err != nil {
+			return err
+		}
+
+		msg.AdditionalSubjectIDs = append(msg.AdditionalSubjectIDs, locid)
 	}
 
 	if _, err := s.EventsConnection.PublishEvent(s.Context, "load-balancer", msg); err != nil {
