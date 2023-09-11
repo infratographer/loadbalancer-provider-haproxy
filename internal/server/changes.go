@@ -12,23 +12,15 @@ import (
 
 func (s *Server) processLoadBalancerChangeCreate(lb *loadbalancer.LoadBalancer) error {
 	// for now, limit to one IP address per loadbalancer
-	if len(lb.LbData.LoadBalancer.IPAddresses) == 0 {
-		if ip, err := ipam.RequestAddress(s.Context, s.IPAMClient, s.Logger, s.IPBlock, lb.LoadBalancerID.String(), lb.LbData.LoadBalancer.Owner.ID); err != nil {
+	if len(lb.LbData.IPAddresses) == 0 {
+		if ip, err := ipam.RequestAddress(s.Context, s.IPAMClient, s.Logger, s.IPBlock, lb.LoadBalancerID.String(), lb.LbData.Owner.ID); err != nil {
 			return err
 		} else {
 			msg := events.EventMessage{
-				EventType: "ip-address.assigned",
-				SubjectID: lb.LoadBalancerID,
-				Timestamp: time.Now().UTC(),
-			}
-
-			for _, loc := range s.Locations {
-				locid, err := gidx.Parse(loc)
-				if err != nil {
-					return err
-				}
-
-				msg.AdditionalSubjectIDs = append(msg.AdditionalSubjectIDs, locid)
+				EventType:            "ip-address.assigned",
+				SubjectID:            lb.LoadBalancerID,
+				Timestamp:            time.Now().UTC(),
+				AdditionalSubjectIDs: []gidx.PrefixedID{gidx.PrefixedID(lb.LbData.Location.ID)},
 			}
 
 			if _, err := s.EventsConnection.PublishEvent(s.Context, "load-balancer", msg); err != nil {
@@ -47,18 +39,10 @@ func (s *Server) processLoadBalancerChangeDelete(lb *loadbalancer.LoadBalancer) 
 	}
 
 	msg := events.EventMessage{
-		EventType: "ip-address.unassigned",
-		SubjectID: lb.LoadBalancerID,
-		Timestamp: time.Now().UTC(),
-	}
-
-	for _, loc := range s.Locations {
-		locid, err := gidx.Parse(loc)
-		if err != nil {
-			return err
-		}
-
-		msg.AdditionalSubjectIDs = append(msg.AdditionalSubjectIDs, locid)
+		EventType:            "ip-address.unassigned",
+		SubjectID:            lb.LoadBalancerID,
+		Timestamp:            time.Now().UTC(),
+		AdditionalSubjectIDs: []gidx.PrefixedID{gidx.PrefixedID(lb.LbData.Location.ID)},
 	}
 
 	if _, err := s.EventsConnection.PublishEvent(s.Context, "load-balancer", msg); err != nil {
