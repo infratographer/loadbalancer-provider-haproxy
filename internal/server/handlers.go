@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	"golang.org/x/exp/slices"
 
 	"go.infratographer.com/x/events"
@@ -19,33 +21,40 @@ var (
 	defaultNakDelay = time.Second * 5
 )
 
-func (s *Server) ProcessChange(messages <-chan events.Message[events.ChangeMessage]) {
+func (s *Server) ListenChanges(messages <-chan events.Message[events.ChangeMessage]) {
+	for msg := range messages {
+		s.processChange(msg)
+	}
+}
+
+func (s *Server) processChange(msg events.Message[events.ChangeMessage]) {
 	var lb *loadbalancer.LoadBalancer
 
 	var err error
 
-	for msg := range messages {
-		m := msg.Message()
+	m := msg.Message()
 
-		if slices.ContainsFunc(m.AdditionalSubjectIDs, s.LocationCheck) || len(s.Locations) == 0 {
-			if m.EventType != string(events.DeleteChangeType) {
-				lb, err = loadbalancer.NewLoadBalancer(s.Context, s.Logger, s.APIClient, m.SubjectID, m.AdditionalSubjectIDs)
-				if err != nil {
-					s.Logger.Errorw("unable to initialize loadbalancer", "error", err, "messageID", msg.ID(), "message", m)
+	ctx, span := otel.Tracer(instrumentationName).Start(m.GetTraceContext(s.Context), "processChange")
+	defer span.End()
 
-					if errors.Is(err, lbapi.ErrLBNotfound) {
-						// ack and ignore
-						if err = msg.Ack(); err != nil {
-							s.Logger.Errorw("unable to ack message", "error", err, "messageID", msg.ID(), "message", m)
-						}
-					} else {
-						// nack and retry
-						if err = msg.Nak(defaultNakDelay); err != nil {
-							s.Logger.Errorw("unable to nack message", "error", err, "messageID", msg.ID(), "message", m)
-						}
+	if slices.ContainsFunc(m.AdditionalSubjectIDs, s.LocationCheck) || len(s.Locations) == 0 {
+		if m.EventType != string(events.DeleteChangeType) {
+			lb, err = loadbalancer.NewLoadBalancer(ctx, s.Logger, s.APIClient, m.SubjectID, m.AdditionalSubjectIDs)
+			if err != nil {
+				s.Logger.Errorw("unable to initialize loadbalancer", "error", err, "messageID", msg.ID(), "message", m)
+
+				if errors.Is(err, lbapi.ErrLBNotfound) {
+					// ack and ignore
+					if err = msg.Ack(); err != nil {
+						s.Logger.Errorw("unable to ack message", "error", err, "messageID", msg.ID(), "message", m)
+					}
+				} else {
+					// nack and retry
+					if err = msg.Nak(defaultNakDelay); err != nil {
+						s.Logger.Errorw("unable to nack message", "error", err, "messageID", msg.ID(), "message", m)
 					}
 
-					continue
+					return
 				}
 			} else {
 				loc := s.GetLocation(m.AdditionalSubjectIDs)
@@ -62,32 +71,44 @@ func (s *Server) ProcessChange(messages <-chan events.Message[events.ChangeMessa
 			}
 
 			if lb != nil && lb.LbType != loadbalancer.TypeNoLB {
+				span.SetAttributes(
+					attribute.String("loadbalancer.id", lb.LoadBalancerID.String()),
+					attribute.String("message.event", m.EventType),
+					attribute.String("message.id", msg.ID()),
+					attribute.String("message.subject", m.SubjectID.String()),
+				)
+
 				switch {
 				case m.EventType == string(events.CreateChangeType) && lb.LbType == loadbalancer.TypeLB:
 					s.Logger.Debugw("requesting address for loadbalancer", "loadbalancer", lb.LoadBalancerID.String())
 
-					if err := s.processLoadBalancerChangeCreate(lb); err != nil {
+					if err := s.processLoadBalancerChangeCreate(ctx, lb); err != nil {
 						s.Logger.Errorw("handler unable to request address for loadbalancer", "error", err, "loadbalancer", lb.LoadBalancerID.String())
 
 						if err = msg.Nak(defaultNakDelay); err != nil {
 							s.Logger.Errorw("unable to nack message", "error", err, "messageID", msg.ID(), "message", m)
 						}
+
+						return
 					}
 				case m.EventType == string(events.DeleteChangeType) && lb.LbType == loadbalancer.TypeLB:
 					s.Logger.Debugw("releasing address from loadbalancer", "loadbalancer", lb.LoadBalancerID.String())
 
-					if err := s.processLoadBalancerChangeDelete(lb); err != nil {
+					if err := s.processLoadBalancerChangeDelete(ctx, lb); err != nil {
 						s.Logger.Errorw("handler unable to release address from loadbalancer", "error", err, "loadbalancer", lb.LoadBalancerID.String())
 
 						if err = msg.Nak(defaultNakDelay); err != nil {
 							s.Logger.Errorw("unable to nack message", "error", err, "messageID", msg.ID(), "message", m)
 						}
+
+						return
 					}
 				default:
 					s.Logger.Debugw("Ignoring event", "loadbalancer", lb.LoadBalancerID.String(), "message", m)
 				}
 			}
 		}
+
 		// we need to Acknowledge that we received and processed the message,
 		// otherwise, it will be resent over and over again.
 		if err = msg.Ack(); err != nil {

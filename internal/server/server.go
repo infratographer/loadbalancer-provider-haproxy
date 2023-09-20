@@ -11,6 +11,9 @@ import (
 	"go.infratographer.com/ipam-api/pkg/ipamclient"
 )
 
+// instrumentationName is a unique package name used for tracing
+const instrumentationName = "go.infratographer.com/loadbalancer-provider-haproxy/server"
+
 // Server holds options for server connectivity and settings
 type Server struct {
 	APIClient        *lbapi.Client
@@ -44,7 +47,7 @@ func (s *Server) Run(ctx context.Context) error {
 	}
 
 	for _, ch := range s.ChangeChannels {
-		go s.ProcessChange(ch)
+		go s.ListenChanges(ch)
 	}
 
 	return nil

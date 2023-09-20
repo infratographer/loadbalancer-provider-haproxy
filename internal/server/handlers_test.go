@@ -95,7 +95,7 @@ func TestProcessChange(t *testing.T) { //nolint:govet
 		errPanic("unable to configure subscribers", err)
 	}
 
-	go srv.ProcessChange(srv.ChangeChannels[0])
+	go srv.ListenChanges(srv.ChangeChannels[0])
 
 	_, err = srv.EventsConnection.PublishChange(context.TODO(), "load-balancer", events.ChangeMessage{
 		EventType:            string(events.UpdateChangeType),

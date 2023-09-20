@@ -15,6 +15,7 @@ import (
 	"go.infratographer.com/x/echox"
 	"go.infratographer.com/x/events"
 	"go.infratographer.com/x/oauth2x"
+	"go.infratographer.com/x/otelx"
 	"go.infratographer.com/x/versionx"
 	"go.infratographer.com/x/viperx"
 
@@ -57,6 +58,7 @@ func init() {
 
 	events.MustViperFlags(viper.GetViper(), processCmd.Flags(), appName)
 	oauth2x.MustViperFlags(viper.GetViper(), processCmd.Flags())
+	otelx.MustViperFlags(viper.GetViper(), processCmd.Flags())
 
 	rootCmd.AddCommand(processCmd)
 }
@@ -76,6 +78,11 @@ func process(ctx context.Context, logger *zap.SugaredLogger) error {
 	conn, err := events.NewConnection(config.AppConfig.Events, events.WithLogger(logger))
 	if err != nil {
 		logger.Fatalw("failed to initialize events", "error", err)
+	}
+
+	err = otelx.InitTracer(config.AppConfig.Tracing, appName, logger)
+	if err != nil {
+		logger.Fatalw("failed to initialize tracer", "error", err)
 	}
 
 	server := &server.Server{

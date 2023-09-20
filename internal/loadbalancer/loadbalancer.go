@@ -6,6 +6,7 @@ import (
 
 	lbapi "go.infratographer.com/load-balancer-api/pkg/client"
 	"go.infratographer.com/x/gidx"
+	"go.opentelemetry.io/otel"
 	"go.uber.org/zap"
 )
 
@@ -13,6 +14,9 @@ import (
 func NewLoadBalancer(ctx context.Context, logger *zap.SugaredLogger, client *lbapi.Client, subj gidx.PrefixedID, adds []gidx.PrefixedID) (*LoadBalancer, error) {
 	l := new(LoadBalancer)
 	l.isLoadBalancer(subj, adds)
+
+	ctx, span := otel.Tracer(instrumentationName).Start(ctx, "NewLoadBalancer")
+	defer span.End()
 
 	if l.LbType != TypeNoLB {
 		data, err := client.GetLoadBalancer(ctx, l.LoadBalancerID.String())

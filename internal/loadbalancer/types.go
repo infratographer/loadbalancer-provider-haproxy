@@ -5,6 +5,9 @@ import (
 	"go.infratographer.com/x/gidx"
 )
 
+// instrumentationName is a unique package name used for tracing
+const instrumentationName = "go.infratographer.com/loadbalancer-provider-haproxy/loadbalancer"
+
 const (
 	LBPrefix = "loadbal"
 

@@ -13,3 +13,18 @@ data:
   LOADBALANCERPROVIDERHAPROXY_IPAM_ENDPOINT: "{{ .Values.provider.ipam.endpoint }}"
   LOADBALANCERPROVIDERHAPROXY_IPBLOCK: "{{ .Values.provider.ipBlock }}"
   LOADBALANCERPROVIDERHAPROXY_OIDC_CLIENT_ISSUER: "{{ .Values.provider.api.oidc.client.issuer }}"
+{{- if .Values.provider.tracing.enabled }}
+  LOADBALANCERPROVIDERHAPROXY_TRACING_ENABLED: "{{ .Values.provider.tracing.enabled }}"
+  LOADBALANCERPROVIDERHAPROXY_TRACING_PROVIDER: "{{ .Values.provider.tracing.provider }}"
+  LOADBALANCERPROVIDERHAPROXY_TRACING_ENVIRONMENT: "{{ .Values.provider.tracing.environment }}"
+{{- if eq .Values.provider.tracing.provider "jaeger" }}
+  LOADBALANCERPROVIDERHAPROXY_TRACING_JAEGER_ENDPOINT: "{{ .Values.provider.tracing.jaeger.endpoint }}"
+  LOADBALANCERPROVIDERHAPROXY_TRACING_JAEGER_USER: "{{ .Values.provider.tracing.jaeger.user }}"
+  LOADBALANCERPROVIDERHAPROXY_TRACING_JAEGER_PASSWORD: "{{ .Values.provider.tracing.jaeger.password }}"
+{{- end }}
+{{- if eq .Values.provider.tracing.provider "otlpgrpc" }}
+  LOADBALANCERPROVIDERHAPROXY_TRACING_OTLP_ENDPOINT: "{{ .Values.provider.tracing.otlp.endpoint }}"
+  LOADBALANCERPROVIDERHAPROXY_TRACING_OTLP_INSECURE: "{{ .Values.provider.tracing.otlp.insecure }}"
+  LOADBALANCERPROVIDERHAPROXY_TRACING_OTLP_CERTIFICATE: "{{ .Values.provider.tracing.otlp.certificate }}"
+{{- end }}
+{{- end }}

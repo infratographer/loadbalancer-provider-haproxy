@@ -13,6 +13,7 @@ import (
 
 	"go.infratographer.com/loadbalancer-provider-haproxy/internal/config"
 
+	"go.infratographer.com/x/loggingx"
 	"go.infratographer.com/x/viperx"
 )
 
@@ -41,11 +42,7 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.loadbalancerproviderhaproxy.yaml)")
 
-	rootCmd.PersistentFlags().Bool("debug", false, "enable debug logging")
-	viperx.MustBindFlag(viper.GetViper(), "debug", rootCmd.PersistentFlags().Lookup("debug"))
-
-	rootCmd.PersistentFlags().Bool("pretty", false, "enable pretty (human readable) logging output")
-	viperx.MustBindFlag(viper.GetViper(), "logging.pretty", rootCmd.PersistentFlags().Lookup("pretty"))
+	loggingx.MustViperFlags(viper.GetViper(), rootCmd.PersistentFlags())
 
 	rootCmd.PersistentFlags().String("healthcheck-port", ":8080", "port to run healthcheck probe on")
 	viperx.MustBindFlag(viper.GetViper(), "healthcheck-port", rootCmd.PersistentFlags().Lookup("healthcheck-port"))
@@ -82,28 +79,7 @@ func initConfig() {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
 
-	setupLogging()
-}
-
-func setupLogging() {
-	cfg := zap.NewProductionConfig()
-	if viper.GetBool("logging.pretty") {
-		cfg = zap.NewDevelopmentConfig()
-	}
-
-	if viper.GetBool("logging.debug") {
-		cfg.Level = zap.NewAtomicLevelAt(zap.DebugLevel)
-	} else {
-		cfg.Level = zap.NewAtomicLevelAt(zap.InfoLevel)
-	}
-
-	l, err := cfg.Build()
-	if err != nil {
-		panic(err)
-	}
-
-	logger = l.Sugar().With("app", "loadbalancerproviderhaproxy")
-	defer logger.Sync() //nolint:errcheck
+	logger = loggingx.InitLogger(appName, config.AppConfig.Logging)
 }
 
 // setupAppConfig loads our config.AppConfig struct with the values bound by
