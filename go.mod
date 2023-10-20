@@ -9,8 +9,8 @@ require (
 	github.com/stretchr/testify v1.8.4
 	go.infratographer.com/ipam-api v0.0.4
 	go.infratographer.com/load-balancer-api v0.0.26
-	go.infratographer.com/loadbalancer-manager-haproxy v0.0.4
 	go.infratographer.com/x v0.3.8
+	go.opentelemetry.io/otel v1.16.0
 	go.uber.org/zap v1.25.0
 	golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63
 )
@@ -69,7 +69,6 @@ require (
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho v0.42.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.42.0 // indirect
-	go.opentelemetry.io/otel v1.16.0 // indirect
 	go.opentelemetry.io/otel/exporters/jaeger v1.16.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/internal/retry v1.16.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.16.0 // indirect

@@ -16,17 +16,18 @@ const instrumentationName = "go.infratographer.com/loadbalancer-provider-haproxy
 
 // Server holds options for server connectivity and settings
 type Server struct {
-	APIClient        *lbapi.Client
-	IPAMClient       *ipamclient.Client
-	Context          context.Context
-	Debug            bool
-	Echo             *echox.Server
-	IPBlock          string
-	Locations        []string
-	Logger           *zap.SugaredLogger
-	Publisher        *events.Publisher
-	EventsConnection events.Connection
-	ChangeTopics     []string
+	APIClient             *lbapi.Client
+	IPAMClient            *ipamclient.Client
+	Context               context.Context
+	Debug                 bool
+	Echo                  *echox.Server
+	IPBlock               string
+	Locations             []string
+	Logger                *zap.SugaredLogger
+	Publisher             *events.Publisher
+	EventsConnection      events.Connection
+	ChangeTopics          []string
+	MaxProcessMsgAttempts uint64
 
 	ChangeChannels []<-chan events.Message[events.ChangeMessage]
 }

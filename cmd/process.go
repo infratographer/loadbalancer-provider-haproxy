@@ -56,6 +56,9 @@ func init() {
 	processCmd.PersistentFlags().String("ipblock", "", "ip block id to use for requesting load balancer IPs")
 	viperx.MustBindFlag(viper.GetViper(), "ipblock", processCmd.PersistentFlags().Lookup("ipblock"))
 
+	processCmd.PersistentFlags().Uint64("max-msg-process-attempts", 0, "maxiumum number of attempts at processing an event message")
+	viperx.MustBindFlag(viper.GetViper(), "max-msg-process-attempts", processCmd.PersistentFlags().Lookup("max-msg-process-attempts"))
+
 	events.MustViperFlags(viper.GetViper(), processCmd.Flags(), appName)
 	oauth2x.MustViperFlags(viper.GetViper(), processCmd.Flags())
 	otelx.MustViperFlags(viper.GetViper(), processCmd.Flags())
@@ -86,14 +89,15 @@ func process(ctx context.Context, logger *zap.SugaredLogger) error {
 	}
 
 	server := &server.Server{
-		Context:          cx,
-		Debug:            viper.GetBool("logging.debug"),
-		Echo:             eSrv,
-		Locations:        viper.GetStringSlice("event-locations"),
-		Logger:           logger,
-		EventsConnection: conn,
-		ChangeTopics:     viper.GetStringSlice("change-topics"),
-		IPBlock:          viper.GetString("ipblock"),
+		Context:               cx,
+		Debug:                 viper.GetBool("logging.debug"),
+		Echo:                  eSrv,
+		Locations:             viper.GetStringSlice("event-locations"),
+		Logger:                logger,
+		EventsConnection:      conn,
+		ChangeTopics:          viper.GetStringSlice("change-topics"),
+		IPBlock:               viper.GetString("ipblock"),
+		MaxProcessMsgAttempts: viper.GetUint64("max-msg-process-attempts"),
 	}
 
 	// init lbapi client and ipam client

@@ -311,8 +311,6 @@ go.infratographer.com/ipam-api v0.0.4 h1:MDCHXJcl9o4XcM/Lu0xUxkrYEYzIfmtvCEcTuJe
 go.infratographer.com/ipam-api v0.0.4/go.mod h1:thDypoVMMbTmR1cpOkT2yMNylC/QB233Slm7XTwxc4g=
 go.infratographer.com/load-balancer-api v0.0.26 h1:8NKOxha1RIe6LJFEIq9FdC0JpZ0f7fqA8iqhy8LWyAY=
 go.infratographer.com/load-balancer-api v0.0.26/go.mod h1:bg/+0/C+LJAKDsDpzm1IeeBTlC/MMO130z4Eh20nwhw=
-go.infratographer.com/loadbalancer-manager-haproxy v0.0.4 h1:Av+aL1duiX6hot+wrRGk3ZoChF3es3Zmmroj8NP0H9I=
-go.infratographer.com/loadbalancer-manager-haproxy v0.0.4/go.mod h1:9JG9KPPEvL46GMAX4e5ZEx3SQgxxOk09oTh0uMVLqhE=
 go.infratographer.com/x v0.3.8 h1:ZKL/oeTO8an4p58ZXtDdCMl9DVr7Y+RAY2EVeTf1/Uc=
 go.infratographer.com/x v0.3.8/go.mod h1:H8O2vkWmo26WNuQEFS2PlJoms9YLJ7BNiwFNMTwCuuA=
 go.opencensus.io v0.21.0/go.mod h1:mSImk1erAIZhrmZN+AvHh14ztQfjbGwt4TtuofqLduU=
