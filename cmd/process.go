@@ -73,6 +73,7 @@ func process(ctx context.Context, logger *zap.SugaredLogger) error {
 		logger.Desugar(),
 		echox.ConfigFromViper(viper.GetViper()),
 		versionx.BuildDetails(),
+		echox.WithLoggingSkipper(echox.SkipDefaultEndpoints),
 	)
 	if err != nil {
 		logger.Fatal("failed to initialize new server", zap.Error(err))
