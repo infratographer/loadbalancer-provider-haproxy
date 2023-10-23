@@ -51,6 +51,8 @@ provider:
       - "*.load-balancer"
       - "events.create.port"
     location: ""
+    # amount of times to retry a failed message before discarding it. 0 means msg will always be nacked on failure to process
+    maxMsgProcessAttempts: 0
   tracing:
     # enabled is true if OpenTelemetry tracing should be enabled for load-balancer-operator
     enabled: false

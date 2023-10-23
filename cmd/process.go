@@ -50,6 +50,9 @@ func init() {
 	processCmd.PersistentFlags().StringSlice("event-locations", nil, "location id(s) to filter events for")
 	viperx.MustBindFlag(viper.GetViper(), "event-locations", processCmd.PersistentFlags().Lookup("event-locations"))
 
+	processCmd.PersistentFlags().Uint64("events-max-msg-process-attempts", 0, "maxiumum number of attempts at processing an event message")
+	viperx.MustBindFlag(viper.GetViper(), "events.maxMsgProcessAttempts", processCmd.PersistentFlags().Lookup("events-max-msg-process-attempts"))
+
 	processCmd.PersistentFlags().StringSlice("change-topics", nil, "change topics to subscribe to")
 	viperx.MustBindFlag(viper.GetViper(), "change-topics", processCmd.PersistentFlags().Lookup("change-topics"))
 
@@ -70,6 +73,7 @@ func process(ctx context.Context, logger *zap.SugaredLogger) error {
 		logger.Desugar(),
 		echox.ConfigFromViper(viper.GetViper()),
 		versionx.BuildDetails(),
+		echox.WithLoggingSkipper(echox.SkipDefaultEndpoints),
 	)
 	if err != nil {
 		logger.Fatal("failed to initialize new server", zap.Error(err))
@@ -86,14 +90,15 @@ func process(ctx context.Context, logger *zap.SugaredLogger) error {
 	}
 
 	server := &server.Server{
-		Context:          cx,
-		Debug:            viper.GetBool("logging.debug"),
-		Echo:             eSrv,
-		Locations:        viper.GetStringSlice("event-locations"),
-		Logger:           logger,
-		EventsConnection: conn,
-		ChangeTopics:     viper.GetStringSlice("change-topics"),
-		IPBlock:          viper.GetString("ipblock"),
+		Context:               cx,
+		Debug:                 viper.GetBool("logging.debug"),
+		Echo:                  eSrv,
+		Locations:             viper.GetStringSlice("event-locations"),
+		Logger:                logger,
+		EventsConnection:      conn,
+		ChangeTopics:          viper.GetStringSlice("change-topics"),
+		IPBlock:               viper.GetString("ipblock"),
+		MaxProcessMsgAttempts: viper.GetUint64("events-max-msg-process-attempts"),
 	}
 
 	// init lbapi client and ipam client

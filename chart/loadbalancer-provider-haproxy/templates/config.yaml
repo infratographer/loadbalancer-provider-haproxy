@@ -5,6 +5,7 @@ metadata:
   labels:
     {{- include "common.labels.standard" . | nindent 4 }}
 data:
+  LOADBALANCERPROVIDERHAPROXY_EVENTS_MAX_MSG_PROCESS_ATTEMPTS: "{{ .Values.provider.events.maxMsgProcessAttempts }}"
   LOADBALANCERPROVIDERHAPROXY_EVENTS_NATS_SUBSCRIBEPREFIX: "{{ .Values.provider.events.topicPrefix }}"
   LOADBALANCERPROVIDERHAPROXY_EVENTS_NATS_PUBLISHPREFIX: "{{ .Values.provider.events.topicPrefix }}"
   LOADBALANCERPROVIDERHAPROXY_EVENTS_NATS_URL: "{{ .Values.provider.events.connectionURL }}"
