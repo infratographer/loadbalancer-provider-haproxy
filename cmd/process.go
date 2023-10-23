@@ -50,14 +50,14 @@ func init() {
 	processCmd.PersistentFlags().StringSlice("event-locations", nil, "location id(s) to filter events for")
 	viperx.MustBindFlag(viper.GetViper(), "event-locations", processCmd.PersistentFlags().Lookup("event-locations"))
 
+	processCmd.PersistentFlags().Uint64("events-max-msg-process-attempts", 0, "maxiumum number of attempts at processing an event message")
+	viperx.MustBindFlag(viper.GetViper(), "events.maxMsgProcessAttempts", processCmd.PersistentFlags().Lookup("events-max-msg-process-attempts"))
+
 	processCmd.PersistentFlags().StringSlice("change-topics", nil, "change topics to subscribe to")
 	viperx.MustBindFlag(viper.GetViper(), "change-topics", processCmd.PersistentFlags().Lookup("change-topics"))
 
 	processCmd.PersistentFlags().String("ipblock", "", "ip block id to use for requesting load balancer IPs")
 	viperx.MustBindFlag(viper.GetViper(), "ipblock", processCmd.PersistentFlags().Lookup("ipblock"))
-
-	processCmd.PersistentFlags().Uint64("max-msg-process-attempts", 0, "maxiumum number of attempts at processing an event message")
-	viperx.MustBindFlag(viper.GetViper(), "max-msg-process-attempts", processCmd.PersistentFlags().Lookup("max-msg-process-attempts"))
 
 	events.MustViperFlags(viper.GetViper(), processCmd.Flags(), appName)
 	oauth2x.MustViperFlags(viper.GetViper(), processCmd.Flags())
@@ -98,7 +98,7 @@ func process(ctx context.Context, logger *zap.SugaredLogger) error {
 		EventsConnection:      conn,
 		ChangeTopics:          viper.GetStringSlice("change-topics"),
 		IPBlock:               viper.GetString("ipblock"),
-		MaxProcessMsgAttempts: viper.GetUint64("max-msg-process-attempts"),
+		MaxProcessMsgAttempts: viper.GetUint64("events-max-msg-process-attempts"),
 	}
 
 	// init lbapi client and ipam client

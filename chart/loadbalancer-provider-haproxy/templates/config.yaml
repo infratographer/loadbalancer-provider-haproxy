@@ -5,6 +5,7 @@ metadata:
   labels:
     {{- include "common.labels.standard" . | nindent 4 }}
 data:
+  LOADBALANCERPROVIDERHAPROXY_EVENTS_MAX_MSG_PROCESS_ATTEMPTS: "{{ .Values.provider.events.maxMsgProcessAttempts }}"
   LOADBALANCERPROVIDERHAPROXY_EVENTS_NATS_SUBSCRIBEPREFIX: "{{ .Values.provider.events.topicPrefix }}"
   LOADBALANCERPROVIDERHAPROXY_EVENTS_NATS_PUBLISHPREFIX: "{{ .Values.provider.events.topicPrefix }}"
   LOADBALANCERPROVIDERHAPROXY_EVENTS_NATS_URL: "{{ .Values.provider.events.connectionURL }}"
@@ -13,7 +14,6 @@ data:
   LOADBALANCERPROVIDERHAPROXY_IPAM_ENDPOINT: "{{ .Values.provider.ipam.endpoint }}"
   LOADBALANCERPROVIDERHAPROXY_IPBLOCK: "{{ .Values.provider.ipBlock }}"
   LOADBALANCERPROVIDERHAPROXY_OIDC_CLIENT_ISSUER: "{{ .Values.provider.api.oidc.client.issuer }}"
-  LOADBALANCERPROVIDERHAPROXY_MAX_MSG_PROCESS_ATTEMPTS: "{{ .Values.provider.events.maxMsgProcessAttempts }}"
 {{- if .Values.provider.tracing.enabled }}
   LOADBALANCERPROVIDERHAPROXY_TRACING_ENABLED: "{{ .Values.provider.tracing.enabled }}"
   LOADBALANCERPROVIDERHAPROXY_TRACING_PROVIDER: "{{ .Values.provider.tracing.provider }}"
