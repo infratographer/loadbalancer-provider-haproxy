@@ -11,7 +11,7 @@ require (
 	go.infratographer.com/load-balancer-api v0.0.26
 	go.infratographer.com/x v0.3.8
 	go.opentelemetry.io/otel v1.16.0
-	go.uber.org/zap v1.25.0
+	go.uber.org/zap v1.26.0
 	golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63
 )
 
