@@ -3,10 +3,15 @@ package cmd
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 	"strings"
 
 	homedir "github.com/mitchellh/go-homedir"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -31,6 +36,16 @@ var rootCmd = &cobra.Command{
 
 var appName = "loadbalancerproviderhaproxy"
 
+var LBProc = promauto.NewCounter(prometheus.CounterOpts{
+	Name: "loadbalancerproviderhaproxy_loadbalancer_total",
+	Help: "The total number of loadbalancers",
+})
+
+var LBUpdate = promauto.NewCounter(prometheus.CounterOpts{
+	Name: "loadbalancerproviderhaproxy_loadbalancer_update_total",
+	Help: "The total number of loadbalancers updated",
+})
+
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
@@ -46,6 +61,10 @@ func init() {
 
 	rootCmd.PersistentFlags().String("healthcheck-port", ":8080", "port to run healthcheck probe on")
 	viperx.MustBindFlag(viper.GetViper(), "healthcheck-port", rootCmd.PersistentFlags().Lookup("healthcheck-port"))
+
+	// Set up a prometheus endpoint and handler
+	http.Handle("/metrics", promhttp.Handler())
+	http.ListenAndServe(":2112", nil)
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
