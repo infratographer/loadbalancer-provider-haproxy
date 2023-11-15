@@ -21,6 +21,10 @@ vendor/
 # Build artifacts
 bin/
 
+# devcontainer artifacts
+.devcontainer/nats/resolver.conf
+.devcontainer/nsc
+
 # Go workspace file
 go.work
 
@@ -29,4 +33,3 @@ go.work
 
 # test output
 coverage.txt
-
