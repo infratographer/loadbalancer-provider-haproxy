@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VARIANT: 1.21-bullseye
+        NODE_VERSION: "none"
+    # Overrides default command so things don't shut down after the process ends.
+    command: sleep infinity
+    env_file:
+      - .env
+    depends_on:
+      - nats
+    volumes:
+      - ./nsc:/nsc
+      - ../..:/workspaces:cached
+    # Port forwarded for local development with emacs tramp
+    # ports:
+    #   - "127.0.0.1:2222:2222"
+    # Use "forwardPorts" in **devcontainer.json** to forward a port locally.
+    # (Adding the "ports" property to this file will not forward from a Codespace.)
+
+  nats-init:
+    image: natsio/nats-box
+    environment:
+      - NSC_HOME=/nsc
+    volumes:
+      - ./nsc:/nsc
+      - ./nats:/nats
+      - ./scripts:/scripts
+    command:
+      - /scripts/nats_init.sh
+
+  nats:
+    image: 'nats:alpine'
+    depends_on:
+      - nats-init
+    command:
+      - -c
+      - '/etc/nats/nats-server.conf'
+      - -D
+    volumes:
+      - ./nats/:/etc/nats
+    restart: unless-stopped
