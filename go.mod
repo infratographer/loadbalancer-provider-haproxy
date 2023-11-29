@@ -9,7 +9,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	go.infratographer.com/ipam-api v0.0.4
 	go.infratographer.com/load-balancer-api v0.0.26
-	go.infratographer.com/x v0.3.8
+	go.infratographer.com/x v0.3.9
 	go.opentelemetry.io/otel v1.16.0
 	go.uber.org/zap v1.26.0
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
@@ -47,8 +47,8 @@ require (
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/minio/highwayhash v1.0.2 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/nats-io/jwt/v2 v2.4.1 // indirect
-	github.com/nats-io/nats-server/v2 v2.9.19 // indirect
+	github.com/nats-io/jwt/v2 v2.5.2 // indirect
+	github.com/nats-io/nats-server/v2 v2.10.1 // indirect
 	github.com/nats-io/nats.go v1.30.2 // indirect
 	github.com/nats-io/nkeys v0.4.5 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
