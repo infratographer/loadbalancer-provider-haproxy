@@ -4,6 +4,8 @@ import (
 	"context"
 
 	lbapi "go.infratographer.com/load-balancer-api/pkg/client"
+	metadata "go.infratographer.com/metadata-api/pkg/client"
+
 	"go.infratographer.com/x/echox"
 	"go.infratographer.com/x/events"
 	"go.uber.org/zap"
@@ -18,6 +20,7 @@ const instrumentationName = "go.infratographer.com/loadbalancer-provider-haproxy
 type Server struct {
 	APIClient             *lbapi.Client
 	IPAMClient            *ipamclient.Client
+	MetadataClient        *metadata.Client
 	Context               context.Context
 	Debug                 bool
 	Echo                  *echox.Server
