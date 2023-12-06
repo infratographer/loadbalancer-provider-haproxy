@@ -12,6 +12,7 @@ import (
 
 	"go.infratographer.com/ipam-api/pkg/ipamclient"
 	lbapi "go.infratographer.com/load-balancer-api/pkg/client"
+	metadata "go.infratographer.com/metadata-api/pkg/client"
 	"go.infratographer.com/x/echox"
 	"go.infratographer.com/x/events"
 	"go.infratographer.com/x/oauth2x"
@@ -33,9 +34,7 @@ var processCmd = &cobra.Command{
 	},
 }
 
-var (
-	processDevMode bool
-)
+var processDevMode bool
 
 func init() {
 	// only available as a CLI arg because it shouldn't be something that could accidentially end up in a config file or env var
@@ -58,6 +57,12 @@ func init() {
 
 	processCmd.PersistentFlags().String("ipblock", "", "ip block id to use for requesting load balancer IPs")
 	viperx.MustBindFlag(viper.GetViper(), "ipblock", processCmd.PersistentFlags().Lookup("ipblock"))
+
+	processCmd.Flags().String("metadata-status-namespace-id", "", "loadbalancer metadata status namespace id")
+	viperx.MustBindFlag(viper.GetViper(), "metadata.status-namespace-id", processCmd.Flags().Lookup("metadata-status-namespace-id"))
+
+	processCmd.Flags().String("metadata-endpoint", "", "metadata-api endpoint")
+	viperx.MustBindFlag(viper.GetViper(), "metadata.endpoint", processCmd.Flags().Lookup("metadata-endpoint"))
 
 	events.MustViperFlags(viper.GetViper(), processCmd.Flags(), appName)
 	oauth2x.MustViperFlags(viper.GetViper(), processCmd.Flags())
@@ -115,9 +120,13 @@ func process(ctx context.Context, logger *zap.SugaredLogger) error {
 		server.IPAMClient = ipamclient.NewClient((viper.GetString("ipam-endpoint")),
 			ipamclient.WithHTTPClient(oauthHTTPClient),
 		)
+		server.MetadataClient = metadata.New(config.AppConfig.Metadata.Endpoint,
+			metadata.WithHTTPClient(oauthHTTPClient),
+		)
 	} else {
 		server.APIClient = lbapi.NewClient((viper.GetString("api-endpoint")))
 		server.IPAMClient = ipamclient.NewClient((viper.GetString("ipam-endpoint")))
+		server.MetadataClient = metadata.New(config.AppConfig.Metadata.Endpoint)
 	}
 
 	if err := server.Run(cx); err != nil {

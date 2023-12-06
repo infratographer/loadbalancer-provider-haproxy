@@ -33,6 +33,8 @@ func (s *Server) processLoadBalancerChangeCreate(ctx context.Context, lb *loadba
 				return err
 			}
 		}
+	} else {
+		s.Logger.Warn("loadbalancer already has an IP address assigned", "loadbalancer", lb.LoadBalancerID)
 	}
 
 	return nil

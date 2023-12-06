@@ -1,6 +1,7 @@
 package server
 
 import (
+	"errors"
 	"strings"
 	"time"
 
@@ -9,17 +10,16 @@ import (
 	"go.opentelemetry.io/otel/codes"
 	"golang.org/x/exp/slices"
 
+	lbapi "go.infratographer.com/load-balancer-api/pkg/client"
+	metadata "go.infratographer.com/load-balancer-api/pkg/metadata"
+
 	"go.infratographer.com/x/events"
 	"go.infratographer.com/x/gidx"
-
-	lbapi "go.infratographer.com/load-balancer-api/pkg/client"
 
 	"go.infratographer.com/loadbalancer-provider-haproxy/internal/loadbalancer"
 )
 
-var (
-	defaultNakDelay = time.Second * 5
-)
+var defaultNakDelay = time.Second * 5
 
 func (s *Server) ListenChanges(messages <-chan events.Message[events.ChangeMessage]) {
 	for msg := range messages {
@@ -68,7 +68,12 @@ func (s *Server) processChange(msg events.Message[events.ChangeMessage]) error {
 		if m.EventType != string(events.DeleteChangeType) {
 			lb, err = loadbalancer.NewLoadBalancer(ctx, s.Logger, s.APIClient, m.SubjectID, m.AdditionalSubjectIDs)
 			if err != nil {
-				s.Logger.Errorw("unable to initialize loadbalancer", "error", err, "messageID", msg.ID(), "message", m)
+				s.Logger.Errorw("unable to initialize loadbalancer", "error", err, "messageID", msg.ID(), "message", m, "event", m.EventType)
+
+				if errors.Is(err, loadbalancer.ErrIgnoreEvent) {
+					return nil
+				}
+
 				return err
 			}
 		} else {
@@ -102,11 +107,23 @@ func (s *Server) processChange(msg events.Message[events.ChangeMessage]) error {
 					s.Logger.Errorw("handler unable to request address for loadbalancer", "error", err, "loadbalancer", lb.LoadBalancerID.String())
 					return err
 				}
+
+				status := &metadata.LoadBalancerStatus{State: metadata.LoadBalancerStateIPAssigned}
+				if err := s.LoadBalancerStatusUpdate(ctx, lb.LoadBalancerID, status); err != nil {
+					s.Logger.Errorw("failed to update metadata", "error", err, "loadbalancer", lb.LoadBalancerID.String(), "loadbalancerState", status.State)
+					return err
+				}
 			case m.EventType == string(events.DeleteChangeType) && lb.LbType == loadbalancer.TypeLB:
 				s.Logger.Debugw("releasing address from loadbalancer", "loadbalancer", lb.LoadBalancerID.String())
 
 				if err := s.processLoadBalancerChangeDelete(ctx, lb); err != nil {
 					s.Logger.Errorw("handler unable to release address from loadbalancer", "error", err, "loadbalancer", lb.LoadBalancerID.String())
+					return err
+				}
+
+				status := &metadata.LoadBalancerStatus{State: metadata.LoadBalancerStateIPUnassigned}
+				if err := s.LoadBalancerStatusUpdate(ctx, lb.LoadBalancerID, status); err != nil {
+					s.Logger.Errorw("failed to update metadata", "error", err, "loadbalancer", lb.LoadBalancerID.String(), "loadbalancerState", status.State)
 					return err
 				}
 			default:

@@ -2,6 +2,7 @@
 package config
 
 import (
+	"go.infratographer.com/x/gidx"
 	"go.infratographer.com/x/oauth2x"
 
 	"go.infratographer.com/x/echox"
@@ -12,11 +13,18 @@ import (
 
 // AppConfig contains the application configuration structure.
 var AppConfig struct {
-	Logging loggingx.Config
-	Events  events.Config
-	Server  echox.Config
-	Tracing otelx.Config
-	OIDC    OIDCClientConfig
+	Logging  loggingx.Config
+	Events   events.Config
+	Server   echox.Config
+	Tracing  otelx.Config
+	OIDC     OIDCClientConfig
+	Metadata MetadataConfig
+}
+
+// MetadataConfig stores the configuration for metadata
+type MetadataConfig struct {
+	StatusNamespaceID gidx.PrefixedID `mapstructure:"status-namespace-id"`
+	Endpoint          string
 }
 
 // OIDCClientConfig stores the configuration for an OIDC client
