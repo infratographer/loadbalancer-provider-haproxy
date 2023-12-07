@@ -7,10 +7,19 @@ import (
 
 const subsystem = "loadbalancer_provider_haproxy"
 
-var numberIPsRequestedAndReleasedGauge = promauto.NewGauge(
-	prometheus.GaugeOpts{
-		Subsystem: subsystem,
-		Name:      "ips_requested_and_released",
-		Help:      "Count of IPs requested and released",
-	},
+var (
+	numberIPsRequestedGauge = promauto.NewGauge(
+		prometheus.GaugeOpts{
+			Subsystem: subsystem,
+			Name:      "ips_requested_count",
+			Help:      "The total number of IPs requested",
+		},
+	)
+	numberIPsReleasedGauge = promauto.NewGauge(
+		prometheus.GaugeOpts{
+			Subsystem: subsystem,
+			Name:      "ips_released_count",
+			Help:      "The total number of IPs released",
+		},
+	)
 )
