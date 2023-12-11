@@ -8,7 +8,7 @@ require (
 	github.com/spf13/viper v1.17.0
 	github.com/stretchr/testify v1.8.4
 	go.infratographer.com/ipam-api v0.0.4
-	go.infratographer.com/load-balancer-api v0.0.36-0.20231201160449-63fdc7abfac5
+	go.infratographer.com/load-balancer-api v0.0.36-0.20231206164402-d85a9ac7dde5
 	go.infratographer.com/metadata-api v0.0.4-0.20231117162412-b428513be7b6
 	go.infratographer.com/x v0.3.9
 	go.opentelemetry.io/otel v1.21.0
