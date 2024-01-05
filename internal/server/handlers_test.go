@@ -68,7 +68,7 @@ func TestProcessChange(t *testing.T) { //nolint:govet
 
 	srv := server.Server{
 		APIClient:        lbapi.NewClient(api.URL),
-		IPAMClient:       ipamclient.NewClient(ipamapi.URL),
+		IPAMClient:       ipamclient.New(ipamapi.URL),
 		Context:          context.TODO(),
 		Echo:             eSrv,
 		EventsConnection: conn,
@@ -119,7 +119,7 @@ func TestProcessChange(t *testing.T) { //nolint:govet
 		errPanic("unable to publish change", err)
 	}
 
-	//TODO: verify some update exists
+	// TODO: verify some update exists
 
 	_, err = srv.EventsConnection.PublishChange(context.TODO(), "load-balancer", events.ChangeMessage{
 		EventType:            string(events.DeleteChangeType),

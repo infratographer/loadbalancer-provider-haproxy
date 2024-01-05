@@ -7,7 +7,7 @@ require (
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.17.0
 	github.com/stretchr/testify v1.8.4
-	go.infratographer.com/ipam-api v0.0.4
+	go.infratographer.com/ipam-api v0.1.0
 	go.infratographer.com/load-balancer-api v0.0.36-0.20231201160449-63fdc7abfac5
 	go.infratographer.com/metadata-api v0.0.4-0.20231117162412-b428513be7b6
 	go.infratographer.com/x v0.3.9
@@ -34,7 +34,7 @@ require (
 	github.com/google/uuid v1.4.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.18.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
-	github.com/hasura/go-graphql-client v0.10.0 // indirect
+	github.com/hasura/go-graphql-client v0.10.1 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jaevor/go-nanoid v1.3.0 // indirect
 	github.com/klauspost/compress v1.17.3 // indirect
@@ -61,7 +61,6 @@ require (
 	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/sagikazarmark/locafero v0.3.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
-	github.com/shurcooL/graphql v0.0.0-20230714182844-3e04114ae69a // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.10.0 // indirect
 	github.com/spf13/cast v1.5.1 // indirect
