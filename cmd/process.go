@@ -117,7 +117,7 @@ func process(ctx context.Context, logger *zap.SugaredLogger) error {
 		server.APIClient = lbapi.NewClient((viper.GetString("api-endpoint")),
 			lbapi.WithHTTPClient(oauthHTTPClient),
 		)
-		server.IPAMClient = ipamclient.NewClient((viper.GetString("ipam-endpoint")),
+		server.IPAMClient = ipamclient.New((viper.GetString("ipam-endpoint")),
 			ipamclient.WithHTTPClient(oauthHTTPClient),
 		)
 		server.MetadataClient = metadata.New(config.AppConfig.Metadata.Endpoint,
@@ -125,7 +125,7 @@ func process(ctx context.Context, logger *zap.SugaredLogger) error {
 		)
 	} else {
 		server.APIClient = lbapi.NewClient((viper.GetString("api-endpoint")))
-		server.IPAMClient = ipamclient.NewClient((viper.GetString("ipam-endpoint")))
+		server.IPAMClient = ipamclient.New((viper.GetString("ipam-endpoint")))
 		server.MetadataClient = metadata.New(config.AppConfig.Metadata.Endpoint)
 	}
 
