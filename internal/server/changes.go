@@ -28,6 +28,8 @@ func (s *Server) processLoadBalancerChangeCreate(ctx context.Context, lb *loadba
 				AdditionalSubjectIDs: []gidx.PrefixedID{gidx.PrefixedID(lb.LbData.Location.ID)},
 			}
 
+			numberIPsRequestedGauge.Inc()
+
 			if _, err := s.EventsConnection.PublishEvent(ctx, "load-balancer", msg); err != nil {
 				s.Logger.Debugw("failed to publish event", "error", err, "ip", ip, "loadbalancer", lb.LoadBalancerID, "block", s.IPBlock)
 				return err
@@ -54,6 +56,8 @@ func (s *Server) processLoadBalancerChangeDelete(ctx context.Context, lb *loadba
 		Timestamp:            time.Now().UTC(),
 		AdditionalSubjectIDs: []gidx.PrefixedID{gidx.PrefixedID(lb.LbData.Location.ID)},
 	}
+
+	numberIPsReleasedGauge.Inc()
 
 	if _, err := s.EventsConnection.PublishEvent(ctx, "load-balancer", msg); err != nil {
 		s.Logger.Debugw("failed to publish event", "error", err, "loadbalancer", lb.LoadBalancerID, "block", s.IPBlock)
