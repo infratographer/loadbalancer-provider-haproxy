@@ -1,7 +1,6 @@
 package loadbalancer
 
 import (
-	"github.com/prometheus/client_golang/prometheus"
 	lbapi "go.infratographer.com/load-balancer-api/pkg/client"
 	"go.infratographer.com/x/gidx"
 )
@@ -24,5 +23,4 @@ type LoadBalancer struct {
 	LoadBalancerID gidx.PrefixedID
 	LbData         *lbapi.LoadBalancer
 	LbType         int
-	PromGauge      prometheus.Gauge
 }
